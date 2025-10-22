@@ -3,6 +3,8 @@
 
 # Pterodactyl Discord Manager
 
+## Support Discord: https://discord.gg/CEqpstx9EA
+
 ## Overview
 
 **Pterodactyl Discord Manager** is a Discord bot that integrates with the **Pterodactyl Panel API**, allowing users to **create and manage their own servers and accounts** directly from Discord.  
