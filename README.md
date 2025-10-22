@@ -66,10 +66,6 @@ PORT="53134"
 
 # OAuth2 secret
 SECRET=""
-
-# Partner configuration (for internal testing only)
-PARTNER_CHANNEL=""
-PARTNER_TEXT=""
 ```
 
 3. **Install dependencies:**
