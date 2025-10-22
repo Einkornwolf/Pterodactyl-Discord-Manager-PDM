@@ -1,5 +1,5 @@
 
- <img width="1024" height="1024" alt="logo_pdm" src="https://github.com/user-attachments/assets/d476d89f-b141-4553-ab80-0d2dc6a71760" />
+ <img width="512" height="512" alt="logo_pdm" src="https://github.com/user-attachments/assets/d476d89f-b141-4553-ab80-0d2dc6a71760" />
 
  # Pterodactyl Discord Manager
 
