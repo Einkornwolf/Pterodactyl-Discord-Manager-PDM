@@ -1,7 +1,7 @@
 
- <img width="256" height="256" alt="logo_pdm" src="https://github.com/user-attachments/assets/d476d89f-b141-4553-ab80-0d2dc6a71760" />
+ <img width="128" height="128" alt="logo_pdm" src="https://github.com/user-attachments/assets/d476d89f-b141-4553-ab80-0d2dc6a71760" />
 
-  <img width="256" height="256" alt="logo_pdm" src="https://github.com/user-attachments/assets/d476d89f-b141-4553-ab80-0d2dc6a71760" /> # Pterodactyl Discord Manager
+# Pterodactyl Discord Manager
 
 ## Overview
 
