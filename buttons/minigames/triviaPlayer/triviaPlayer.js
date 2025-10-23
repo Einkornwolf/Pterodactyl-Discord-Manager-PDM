@@ -14,7 +14,6 @@ const { BaseInteraction, Client, EmbedBuilder, ActionRowBuilder, ButtonBuilder, 
 const { request } = require("undici");
 const { EmojiManager } = require("../../../classes/emojiManager")
 
-
 module.exports = {
     customId: "triviaPlayer",
 
