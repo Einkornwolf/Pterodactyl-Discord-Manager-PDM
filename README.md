@@ -35,7 +35,7 @@ git clone https://github.com/Einkornwolf/Pterodactyl-Discord-Manager.git
 
 ## Special Thanks
 
-This Bot is using <https://the-trivia-api.com/> in order to aquire Trivia-Questions for a minigame. This is a Non-Commercial API.
+This bot uses the Trivia API <https://the-trivia-api.com/> to acquire trivia questions for a minigame. This API is licensed for non-commercial use only and needs to either be licensed or the feature removed if this Software is to be used commercially at any point. This is the main reason this Repository is licensed under a non-commercial License
 
 ## Installation
 
