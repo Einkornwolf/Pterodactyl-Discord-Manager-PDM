@@ -10,10 +10,9 @@ const { CacheManager } = require("./../../classes/cacheManager")
 const { EconomyManager } = require("./../../classes/economyManager")
 const { LogManager } = require("./../../classes/logManager")
 const { DataBaseInterface } = require("./../../classes/dataBaseInterface")
-const { UtilityCollection } = require("./../../classes/utilityCollection")
 const { EmojiManager } = require("../../classes/emojiManager")
 const dotenv = require('dotenv');
-const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, MessageFlags } = require("discord.js")
+const { BaseInteraction, Client, EmbedBuilder, ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, MessageFlags } = require("discord.js")
 
 module.exports = {
   customId: "addShopItem",
@@ -34,14 +33,14 @@ module.exports = {
    * @returns
    */
   async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t, giftCodeManager, emojiManager) {
-    let { user: { id: userId, tag }, user } = interaction, shopItems = await databaseInterface.getObject("shop_items_servers"), fetchedUser = await user.fetch(true), { accentColor } = fetchedUser
-
-    const guild = interaction.guild;
+    let { user: { id: userId, tag }, user, guild } = interaction, shopItems = await databaseInterface.getObject("shop_items_servers"), fetchedUser = await user.fetch(true), { accentColor } = fetchedUser
+    
     const serverIconURL = guild.iconURL({ dynamic: true });
 
     dotenv.config({
       path: './config.env'
     })
+    
     //Check if there are more than 24 items currently in the shop
     if (!shopItems) shopItems = 0
     switch (shopItems.length >= 24) {

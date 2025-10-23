@@ -10,10 +10,9 @@ const { CacheManager } = require("../../classes/cacheManager")
 const { EconomyManager } = require("../../classes/economyManager")
 const { LogManager } = require("../../classes/logManager")
 const { DataBaseInterface } = require("../../classes/dataBaseInterface")
-const { UtilityCollection } = require("../../classes/utilityCollection")
 const { EmojiManager } = require("../../classes/emojiManager")
 const dotenv = require('dotenv');
-const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, MessageFlags } = require("discord.js")
+const { BaseInteraction, Client, EmbedBuilder, ActionRowBuilder, ButtonBuilder, MessageFlags } = require("discord.js")
 
 module.exports = {
   customId: "selectShopItem",
@@ -33,20 +32,20 @@ module.exports = {
    * @returns
    */
   async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t, giftCodeManager, emojiManager) {
-    let { user: { id, tag }, user, values } = interaction, shopItems = await databaseInterface.getObject("shop_items_servers"), fetchedUser = await user.fetch(true), { accentColor } = fetchedUser
+    let { user, values, guild } = interaction, shopItems = await databaseInterface.getObject("shop_items_servers"), fetchedUser = await user.fetch(true), { accentColor } = fetchedUser
 
-    const guild = interaction.guild;
     const serverIconURL = guild.iconURL({ dynamic: true });
-    //Add item to shop
-    if (interaction.values == "addShopItem") {
-      let selectOption = client.selectMenus.get("addShopItem")
-      await selectOption.execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t)
-      return
-    }
 
     dotenv.config({
       path: './config.env'
     })
+
+    //Add item to shop
+    if (interaction.values == "addShopItem") {
+      let selectOption = client.selectMenus.get("addShopItem")
+      await selectOption.execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t, giftCodeManager, emojiManager)
+      return
+    }
 
     //Show shop item info
     //Check if shop item still exists
@@ -73,15 +72,13 @@ module.exports = {
 
     //Get Data about the shop item
     let nestData = await panel.getNestData(), selectedItem = shopItems[values].data, { name, description, price, server_databases, server_cpu, server_ram, server_disk, server_swap, server_backups, egg_id } = selectedItem
-
     //Get Nest ID
     let selectedNest = nestData.find(nest => nest.attributes.relationships.eggs.data.some(egg => egg.attributes.id == egg_id)), { attributes: { id: nestId } } = selectedNest
-
     //Get Egg Data
     let eggData = await panel.getEggData(egg_id, nestId), { attributes: { docker_image, startup, relationships: { variables: { data } } } } = eggData
     //Get Enviroment Variables
     let enviromentVariables = data, finalEnvList = new Object()
-
+    //Get required Environment Variables and save them in a List
     let requiredEnvVariables = enviromentVariables.filter(variable => variable.attributes.rules.includes("required"))
 
     for (let variable of requiredEnvVariables) {

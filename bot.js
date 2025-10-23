@@ -3,12 +3,8 @@
  * All rights reserved.
  */
 
-// Alle requires und Requierements
+// All Requirements
 const dotenv = require('dotenv');
-const path = require('node:path');
-const axios = require('axios')
-const { GlobalFonts } = require("@napi-rs/canvas");
-const { join } = require('node:path');
 
 //Initializte DotEnv
 dotenv.config({

@@ -10,9 +10,8 @@ const { CacheManager } = require("./../../classes/cacheManager")
 const { EconomyManager } = require("./../../classes/economyManager")
 const { LogManager } = require("./../../classes/logManager")
 const { DataBaseInterface } = require("./../../classes/dataBaseInterface")
-const { UtilityCollection } = require("./../../classes/utilityCollection")
 const { EmojiManager } = require("../../classes/emojiManager")
-const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, MessageFlags } = require("discord.js")
+const { BaseInteraction, Client, EmbedBuilder, MessageFlags } = require("discord.js")
 const dotenv = require('dotenv');
 
 module.exports = {
@@ -32,19 +31,17 @@ module.exports = {
    * @returns
    */
   async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t, giftCodeManager, emojiManager) {
-    // dotenv + guild icon (Footer)
+    const { user: { id: userId, tag }, values, user, guild } = interaction;
+    const serverIconURL = guild ? guild.iconURL({ dynamic: true }) : undefined;
+
     dotenv.config({
       path: './config.env'
     })
-    const guild = interaction.guild;
-    const serverIconURL = guild ? guild.iconURL({ dynamic: true }) : undefined;
 
-    // Normalize input values and load shop data
-    const { user: { id: userId, tag }, values, user } = interaction;
     const shopItems = await databaseInterface.getObject("shop_items_servers");
-    // values is an array from StringSelectMenu; take first selected value
     const selectedValue = Array.isArray(values) ? values[0] : values;
     const itemIndex = parseInt(selectedValue, 10);
+    //Error Handling if Shop is Empty or the Item is faulty
     if (!shopItems || !Array.isArray(shopItems) || shopItems.length === 0) {
       await interaction.deferReply({ flags: MessageFlags.Ephemeral });
       await interaction.editReply({
@@ -178,15 +175,12 @@ module.exports = {
         );
         break;
       } catch (e) {
-        // If it's a 504, retry a couple of times with backoff
         const statusCode = e && e.response && e.response.status;
         await logManager.logString(`${tag} server creation attempt ${attempt} failed with ${e.message} (status: ${statusCode})`);
         if (statusCode == 504 && attempt < maxAttempts) {
-          // wait with exponential/backoff (attempt * 1000ms)
           await new Promise((r) => setTimeout(r, attempt * 1000));
           continue;
         }
-        // Non-retriable or max attempts reached: inform user and log
         await interaction.editReply({
           embeds: [
             new EmbedBuilder()
