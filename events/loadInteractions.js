@@ -42,9 +42,5 @@ module.exports = {
     //Runtime Job
     cronJob = client.cronJobs.get("dailyRuntime");
     await cronJob.execute(client, panel, database, emojiManager);
-
-    //Start express server
-    let dashboard = require("../express/server.js")
-    await dashboard.execute(client, new EconomyManager(), panel)
   },
 };
