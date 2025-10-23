@@ -12,7 +12,6 @@ const { LogManager } = require("./../../classes/logManager")
 const { DataBaseInterface } = require("./../../classes/dataBaseInterface")
 const { EmojiManager } = require("../../classes/emojiManager")
 const { BaseInteraction, Client, EmbedBuilder, MessageFlags } = require("discord.js")
-const dotenv = require('dotenv');
 
 module.exports = {
   customId: "createSelectedItem",
@@ -33,10 +32,6 @@ module.exports = {
   async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t, giftCodeManager, emojiManager) {
     const { user: { id: userId, tag }, values, user, guild } = interaction;
     const serverIconURL = guild ? guild.iconURL({ dynamic: true }) : undefined;
-
-    dotenv.config({
-      path: './config.env'
-    })
 
     const shopItems = await databaseInterface.getObject("shop_items_servers");
     const selectedValue = Array.isArray(values) ? values[0] : values;

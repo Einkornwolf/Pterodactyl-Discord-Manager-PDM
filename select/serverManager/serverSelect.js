@@ -10,15 +10,9 @@ const { CacheManager } = require("../../classes/cacheManager")
 const { EconomyManager } = require("../../classes/economyManager")
 const { LogManager } = require("../../classes/logManager")
 const { DataBaseInterface } = require("../../classes/dataBaseInterface")
-const { UtilityCollection } = require("../../classes/utilityCollection")
 const { EmojiManager } = require("../../classes/emojiManager")
-const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, MessageFlags } = require("discord.js")
-const dotenv = require("dotenv");
-dotenv.config({
-  path: "./config.env",
-});
+const { BaseInteraction, Client, EmbedBuilder, ActionRowBuilder, ButtonBuilder, MessageFlags } = require("discord.js")
 let deletion_offset = process.env.DELETION_OFFSET, price_offset = process.env.PRICE_OFFSET
-
 
 module.exports = {
   customId: "serverSelect",
@@ -39,10 +33,8 @@ module.exports = {
    */
   async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t, giftCodeManager, emojiManager) {
     await interaction.deferReply({ flags: MessageFlags.Ephemeral })
-    // Guild + Footer Icon
-    const guild = interaction.guild;
+    let { values: serverIndex, user: { tag, id }, user, guild } = interaction, userData = await databaseInterface.getObject(id), { e_mail } = userData, userServers = await panel.getAllServers(e_mail), selectedServer = userServers[serverIndex], fetchedUser = await user.fetch(true), { accentColor } = fetchedUser
     const serverIconURL = guild ? guild.iconURL({ dynamic: true }) : undefined;
-    let { values: serverIndex, user: { tag, id }, user } = interaction, userData = await databaseInterface.getObject(id), { e_mail } = userData, userServers = await panel.getAllServers(e_mail), selectedServer = userServers[serverIndex], fetchedUser = await user.fetch(true), { accentColor } = fetchedUser
 
     //Check if Server still exists
     if (selectedServer == undefined || !selectedServer) {
