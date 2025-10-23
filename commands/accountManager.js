@@ -12,12 +12,6 @@ const { EconomyManager } = require("./../classes/economyManager")
 const { LogManager } = require("./../classes/logManager")
 const { DataBaseInterface } = require("./../classes/dataBaseInterface")
 const { BaseInteraction, Client, StringSelectMenuBuilder, EmbedBuilder, ActionRowBuilder, MessageFlags } = require("discord.js")
-
-const dotenv = require("dotenv");
-dotenv.config({
-  path: "./config.env",
-});
-
 const { EmojiManager } = require("./../classes/emojiManager")
 
 module.exports = {
@@ -42,9 +36,7 @@ module.exports = {
    */
   async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t, giftCodeManager, emojiManager) {
     await interaction.deferReply({ flags: MessageFlags.Ephemeral })
-    let { user: { id: userId }, user: iUser } = interaction, fetchedUser = await iUser.fetch(true), { accentColor } = fetchedUser, userData = await databaseInterface.getObject(userId)
-
-    const guild = interaction.guild;
+    let { user: { id: userId }, user: iUser, guild } = interaction, fetchedUser = await iUser.fetch(true), { accentColor } = fetchedUser, userData = await databaseInterface.getObject(userId)
     const serverIconURL = guild ? guild.iconURL({ dynamic: true }) : undefined
 
     const playEmoji = emojiManager.parseEmoji(await emojiManager.getEmoji("emoji_play"));

@@ -10,15 +10,8 @@ const { CacheManager } = require("./../classes/cacheManager")
 const { EconomyManager } = require("./../classes/economyManager")
 const { LogManager } = require("./../classes/logManager")
 const { DataBaseInterface } = require("./../classes/dataBaseInterface")
-const { UtilityCollection } = require("./../classes/utilityCollection")
-const { BaseInteraction, Client, StringSelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, ButtonBuilder, MessageFlags } = require("discord.js")
-
-const dotenv = require("dotenv");
-dotenv.config({
-  path: "./config.env",
-});
-
 const { EmojiManager } = require("./../classes/emojiManager")
+const { BaseInteraction, Client, StringSelectMenuBuilder, EmbedBuilder, ActionRowBuilder, SlashCommandBuilder, MessageFlags } = require("discord.js")
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -40,13 +33,12 @@ module.exports = {
    */
   async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t, giftCodeManager, emojiManager) {
     await interaction.deferReply({ flags: MessageFlags.Ephemeral })
-    let { user: { id: userId, tag }, user } = interaction, fetchedUser = await user.fetch(true), { accentColor } = fetchedUser
-    const guild = interaction.guild;
+    let { user: { id: userId, tag }, user, guild } = interaction, fetchedUser = await user.fetch(true), { accentColor } = fetchedUser
     const serverIconURL = guild ? guild.iconURL({ dynamic: true }) : undefined
     let userData = await databaseInterface.getObject(userId), shopItems = await databaseInterface.getObject("shop_items_servers");
-    //Check if User has an Account
     const playEmoji = emojiManager.parseEmoji(await emojiManager.getEmoji("emoji_play")) || "▶️";
 
+    //Check if User has an Account
     if (userData == null) {
       await interaction.editReply({
         embeds: [
@@ -71,7 +63,6 @@ module.exports = {
       .setColor(accentColor ? accentColor : 0xe6b04d)
       .setFooter({ text: process.env.FOOTER_TEXT, iconURL: serverIconURL })
       .setTimestamp();
-
 
     //Create Select Menu
     let shopSelect = new StringSelectMenuBuilder()

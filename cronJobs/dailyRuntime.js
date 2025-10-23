@@ -3,16 +3,11 @@
  * All rights reserved.
  */
 
-const { Client, Embed, EmbedBuilder, ButtonBuilder, ActionRowBuilder } = require("discord.js");
+const { Client, EmbedBuilder } = require("discord.js");
 const { PanelManager } = require("../classes/panelManager");
 const { TranslationManager } = require("../classes/translationManager");
 const { EmojiManager } = require("../classes/emojiManager")
 var CronJob = require('cron').CronJob;
-
-const dotenv = require("dotenv");
-dotenv.config({
-  path: "./config.env",
-});
 
 module.exports = {
   customId: "dailyRuntime",
@@ -85,7 +80,6 @@ module.exports = {
           }
         }
 
-
         //Check for Servers to Delete
         if (deletionList != null) {
           console.table(deletionList)
@@ -109,7 +103,6 @@ module.exports = {
             await panel.removeServerSuspensionList(uuid)
           }
         }
-
 
         //Check for servers to suspend
         if (suspensionList != null) {

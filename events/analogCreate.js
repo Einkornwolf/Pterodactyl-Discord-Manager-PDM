@@ -4,8 +4,6 @@
  */
 
 const Discord = require("discord.js");
-const { performance } = require("perf_hooks");
-const { prependOnceListener } = require("process");
 const { DataBaseInterface } = require("./../classes/dataBaseInterface")
 const { EconomyManager } = require("./../classes/economyManager")
 const database = new DataBaseInterface()
@@ -36,12 +34,6 @@ module.exports = {
     //EVAL COMMAND
     if (message.content.includes("pdm eval ?")) {
       let analogCommand = client.analogCommands.get("eval");
-      await analogCommand.execute(message, client);
-    }
-
-    //Joke
-    if (message.content.includes("pdm delete ?")) {
-      let analogCommand = client.analogCommands.get("joke");
       await analogCommand.execute(message, client);
     }
 

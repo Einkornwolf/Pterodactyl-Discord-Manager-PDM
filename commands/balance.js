@@ -13,9 +13,7 @@ const { EconomyManager } = require("./../classes/economyManager")
 const { LogManager } = require("./../classes/logManager")
 const { DataBaseInterface } = require("./../classes/dataBaseInterface")
 const { UtilityCollection } = require("./../classes/utilityCollection")
-const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, MessageFlags } = require("discord.js")
-
-
+const { BaseInteraction, Client, EmbedBuilder, SlashCommandBuilder, AttachmentBuilder, MessageFlags } = require("discord.js")
 const { EmojiManager } = require("./../classes/emojiManager")
 
 module.exports = {
@@ -42,11 +40,9 @@ module.exports = {
    */
   async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t, giftCodeManager, emojiManager) {
   await interaction.deferReply({ flags: MessageFlags.Ephemeral })
-    let { user: { id: userId, tag }, user: user } = interaction, fetchedUser = await user.fetch(true), { accentColor } = fetchedUser
-    const guild = interaction.guild;
+    let { user: { id: userId, tag }, user, guild } = interaction, fetchedUser = await user.fetch(true), { accentColor } = fetchedUser
     const serverIconURL = guild ? guild.iconURL({ dynamic: true }) : undefined
     let userData = await databaseInterface.getObject(userId), utility = new UtilityCollection(), foreignUser = interaction.options.getUser("user")
-
 
     //Given user
     if (foreignUser) {
@@ -131,7 +127,6 @@ module.exports = {
       }
     }
 
-
     //User who executed the command
     //Check if User has an Account
     if (userData == null) {
@@ -149,7 +144,6 @@ module.exports = {
       await logManager.logString(`${tag} tried to use /balance without an Account`)
       return
     }
-
 
     //Canvas
     let canvas = Canvas.createCanvas(700, 250), context = canvas.getContext("2d")
