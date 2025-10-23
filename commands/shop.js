@@ -10,15 +10,7 @@ const { CacheManager } = require("./../classes/cacheManager")
 const { EconomyManager } = require("./../classes/economyManager")
 const { LogManager } = require("./../classes/logManager")
 const { DataBaseInterface } = require("./../classes/dataBaseInterface")
-const { UtilityCollection } = require("./../classes/utilityCollection")
-const { BaseInteraction, Client, StringSelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, ButtonBuilder, MessageFlags } = require("discord.js")
-
-const dotenv = require("dotenv");
-dotenv.config({
-  path: "./config.env",
-});
-
-const { EmojiManager } = require("./../classes/emojiManager")
+const { BaseInteraction, Client, StringSelectMenuBuilder, EmbedBuilder, ActionRowBuilder, SlashCommandBuilder, MessageFlags } = require("discord.js")
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -40,13 +32,13 @@ module.exports = {
    */
   async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t, giftCodeManager, emojiManager) {
     await interaction.deferReply({ flags: MessageFlags.Ephemeral })
-    let { user: { id: userId, tag }, user } = interaction, fetchedUser = await user.fetch(true), { accentColor } = fetchedUser
-    const guild = interaction.guild;
+    let { user: { id: userId, tag }, user, guild } = interaction, fetchedUser = await user.fetch(true), { accentColor } = fetchedUser
     const serverIconURL = guild ? guild.iconURL({ dynamic: true }) : undefined
     let userData = await databaseInterface.getObject(userId), shopItems = await databaseInterface.getObject("shop_items_servers");
-    //Check if User has an Account
     const playEmoji = emojiManager.parseEmoji(await emojiManager.getEmoji("emoji_play")) || "▶️";
+    shopItems = Array.isArray(shopItems) ? shopItems : [];
 
+    //Check if User has an Account
     if (userData == null) {
       await interaction.editReply({
         embeds: [
@@ -72,56 +64,51 @@ module.exports = {
       .setFooter({ text: process.env.FOOTER_TEXT, iconURL: serverIconURL })
       .setTimestamp();
 
-
     //Create Select Menu
     let shopSelect = new StringSelectMenuBuilder()
       .setCustomId("createSelectedItem")
 
     //Check if Shop is empty
-    switch (shopItems == null) {
-      case true: {
-        //Empty
+    if (shopItems.length == 0) {
+      //Empty
+      shopEmbed.addFields([
+        {
+          name: `${await emojiManager.getEmoji("emoji_deny")} ${await t("shop.no_items_label")}`,
+          value: `${await t("shop.no_items_text")}`,
+        }
+      ]);
+      shopEmbed.setFooter({ text: process.env.FOOTER_TEXT, iconURL: serverIconURL }).setTimestamp()
+
+      await interaction.editReply({
+        embeds: [shopEmbed],
+        flags: MessageFlags.Ephemeral
+      })
+    } else {
+      //Not empty
+      for (let item of shopItems) {
+        //Add Embed Fields
         shopEmbed.addFields([
           {
-            name: `${await emojiManager.getEmoji("emoji_deny")} ${await t("shop.no_items_label")}`,
-            value: `${await t("shop.no_items_text")}`,
-          }
-        ]);
-        shopEmbed.setFooter({ text: process.env.FOOTER_TEXT, iconURL: serverIconURL }).setTimestamp()
-
-        await interaction.editReply({
-          embeds: [shopEmbed],
-          flags: MessageFlags.Ephemeral
-        })
-        break;
+            name: `${await emojiManager.getEmoji("emoji_file")} ${item.data.name}`,
+            value: `${await t("add_item_button.modal_price")} \`\`\`js\n${item.data.price} Coins\`\`\`${await t("add_item_button.modal_description")} \`\`\`js\n${item.data.description}\`\`\``,
+            inline: true
+          },
+        ])
+        //Add Select Menu Fields
+        shopSelect.addOptions([
+          {
+            label: `${await t("shop.item_label")} #${shopItems.indexOf(item)}`,
+            description: `${item.data.name}`,
+            value: `${shopItems.indexOf(item)}`,
+            emoji: playEmoji,
+          },
+        ])
       }
-      case false: {
-        //Not empty
-        for (let item of shopItems) {
-          //Add Embed Fields
-          shopEmbed.addFields([
-            {
-              name: `${await emojiManager.getEmoji("emoji_file")} ${item.data.name}`,
-              value: `${await t("add_item_button.modal_price")} \`\`\`js\n${item.data.price} Coins\`\`\`${await t("add_item_button.modal_description")} \`\`\`js\n${item.data.description}\`\`\``,
-              inline: true
-            },
-          ])
-          //Add Select Menu Fields
-          shopSelect.addOptions([
-            {
-              label: `${await t("shop.item_label")} #${shopItems.indexOf(item)}`,
-              description: `${item.data.name}`,
-              value: `${shopItems.indexOf(item)}`,
-              emoji: playEmoji,
-            },
-          ])
-        }
-        await interaction.editReply({
-          embeds: [shopEmbed],
-          components: [new ActionRowBuilder().addComponents(shopSelect)],
-          flags: MessageFlags.Ephemeral
-        })
-      }
+      await interaction.editReply({
+        embeds: [shopEmbed],
+        components: [new ActionRowBuilder().addComponents(shopSelect)],
+        flags: MessageFlags.Ephemeral
+      })
     }
   }
 };

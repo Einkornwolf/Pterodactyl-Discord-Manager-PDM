@@ -3,7 +3,6 @@
  * All rights reserved.
  */
 
-const { SlashCommandBuilder } = require("@discordjs/builders");
 const { TranslationManager } = require("../../classes/translationManager")
 const { PanelManager } = require("../../classes/panelManager")
 const { BoosterManager } = require("../../classes/boosterManager")
@@ -11,16 +10,8 @@ const { CacheManager } = require("../../classes/cacheManager")
 const { EconomyManager } = require("../../classes/economyManager")
 const { LogManager } = require("../../classes/logManager")
 const { DataBaseInterface } = require("../../classes/dataBaseInterface")
-const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, MessageFlags } = require("discord.js");
-const { data } = require("../../commands/serverManager");
-
-const dotenv = require("dotenv");
-dotenv.config({
-  path: "./config.env",
-});
-
+const { BaseInteraction, Client, EmbedBuilder, ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, MessageFlags } = require("discord.js");
 const { EmojiManager } = require("../../classes/emojiManager")
-
 
 module.exports = {
   customId: "addShopItemDataConfirm",
@@ -41,12 +32,7 @@ module.exports = {
    */
   async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t, giftCodeManager, emojiManager) {
     await interaction.deferReply({ flags: MessageFlags.Ephemeral });
-    const user = interaction.user;
-    const id = user.id;
-    const tag = user.tag;
-    const fetchedUser = await user.fetch(true);
-    const { accentColor } = fetchedUser;
-    const guild = interaction.guild;
+    let { user, guild } = interaction, { id, tag } = user, fetchedUser = await user.fetch(true), { accentColor } = fetchedUser
     const serverIconURL = guild ? guild.iconURL({ dynamic: true }) : undefined;
     let cachedData = await cacheManager.getCachedData(id)
     await cacheManager.clearCache(id)
@@ -66,7 +52,6 @@ module.exports = {
       });
       return;
     }
-
 
     //Server Item Creation Modal
     let addServerModal = new ModalBuilder({})
@@ -89,10 +74,7 @@ module.exports = {
       new ActionRowBuilder().addComponents([itemEgg]),
       new ActionRowBuilder().addComponents([itemDatabases])
     ]);
-    //Show Modal
-    //    await interaction.showModal(addServerModal);
-    //    return;
-    //Check configuration (same logic as before)
+
     let { server_cpu: cpu, server_ram: ram, server_disk: disk, server_swap: swap, server_backups: backups, egg_id } = cachedData
     let nestData = await panel.getNestData();
     let chosenNestData = nestData.find(nest => nest.attributes.relationships.eggs.data.some(egg => egg.attributes.id == egg_id))
@@ -112,7 +94,6 @@ module.exports = {
     }
 
     await databaseInterface.addShopItem("server", cachedData)
-
     await interaction.editReply({
       embeds: [
         new EmbedBuilder()

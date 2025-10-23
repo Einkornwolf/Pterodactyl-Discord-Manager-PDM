@@ -4,8 +4,6 @@
  */
 
 const { QuickDB } = require('quick.db');
-
-
 const database = new QuickDB({ filePath: "database/json.sqlite" })
 
 class DataBaseInterface {
@@ -62,10 +60,8 @@ class DataBaseInterface {
         //Remove Shop Item from Database
         this.removeShopItem = async function (indexOfItem) {
             this.newShopData = await this.getObject("shop_items_servers")
-            console.table(this.newShopData)
             if(!this.newShopData) return null
             this.newShopData.splice(indexOfItem, 1)
-            console.table(this.newShopData)
             await this.setShop(this.newShopData)
         }
 

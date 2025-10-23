@@ -75,7 +75,7 @@ module.exports = {
             let { content } = collected, { e_mail } = userData
             try {
                 await collected.delete();
-            } catch (e) { console.log("Could not delete message") }
+            } catch (e) {  }
             if (content !== "delete") {
                 await interaction.editReply({
                     embeds: [

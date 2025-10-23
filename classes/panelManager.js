@@ -8,14 +8,7 @@ const { Password } = require("./passwordGenerator");
 const { DataBaseInterface } = require("./dataBaseInterface");
 const axiosInstance = require("axios");
 const database = new DataBaseInterface();
-const dotenv = require("dotenv");
-const { RichPresenceAssets, CommandInteractionOptionResolver } = require("discord.js");
-const { default: axios } = require("axios");
-dotenv.config({
-  path: "./../config.env",
-});
 serverDeletionOffset = process.env.DELETION_OFFSET;
-
 class PanelManager {
   /**
    * Handles the communication between the Panel and the Bot
@@ -28,16 +21,13 @@ class PanelManager {
   constructor(link, apiKey, accountKey) {
     this.axios = new Axios(axiosInstance, link, apiKey, accountKey);
 
-    // Generic retry wrapper for panel requests (handles transient 504)
+    // Retry Wrapper
     this._withRetries = async function (fn, maxAttempts = 3) {
       for (let attempt = 1; attempt <= maxAttempts; attempt++) {
         try {
           return await fn();
         } catch (e) {
           const statusCode = e && e.response && e.response.status;
-          console.warn(`Panel request attempt ${attempt} failed with ${e && e.message} (status: ${statusCode})`);
-          // Log stack for debugging undefined property errors
-          if (e && e.stack) console.warn(e.stack);
           if ((statusCode === 504 || statusCode === 502 || statusCode === 503) && attempt < maxAttempts) {
             // backoff
             await new Promise((r) => setTimeout(r, attempt * 1000));

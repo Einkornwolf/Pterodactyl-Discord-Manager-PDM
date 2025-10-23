@@ -10,14 +10,8 @@ const { CacheManager } = require("./../classes/cacheManager")
 const { EconomyManager } = require("./../classes/economyManager")
 const { LogManager } = require("./../classes/logManager")
 const { DataBaseInterface } = require("./../classes/dataBaseInterface")
-const { UtilityCollection } = require("./../classes/utilityCollection")
 const { BaseInteraction, Client, StringSelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, ButtonBuilder, MessageFlags } = require("discord.js")
-const dotenv = require("dotenv");
-dotenv.config({
-  path: "./config.env",
-});
 const { EmojiManager } = require("./../classes/emojiManager")
-const deletion_offset = process.env.DELETION_OFFSET;
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -39,11 +33,10 @@ module.exports = {
    */
   async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t, giftCodeManager, emojiManager) {
     await interaction.deferReply({ flags: MessageFlags.Ephemeral })
-    //Check if User has an Account
-    let { user: { id: userId, tag }, user } = interaction, fetchedUser = await user.fetch(true), { accentColor } = fetchedUser, userData = await databaseInterface.getObject(userId);
-    const guild = interaction.guild;
+    let { user: { id: userId, tag }, user, guild } = interaction, fetchedUser = await user.fetch(true), { accentColor } = fetchedUser, userData = await databaseInterface.getObject(userId);
     const serverIconURL = guild ? guild.iconURL({ dynamic: true }) : undefined
 
+    //Check if User has an AccountF
     if (userData == null) {
       await interaction.editReply({
         embeds: [

@@ -10,15 +10,8 @@ const { CacheManager } = require("./../classes/cacheManager")
 const { EconomyManager } = require("./../classes/economyManager")
 const { LogManager } = require("./../classes/logManager")
 const { DataBaseInterface } = require("./../classes/dataBaseInterface")
-const { UtilityCollection } = require("./../classes/utilityCollection")
-const { BaseInteraction, Client, StringSelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, ButtonBuilder, MessageFlags } = require("discord.js")
-const dotenv = require("dotenv");
-//Initializte DotEnv
-dotenv.config({
-  path: "./config.env",
-});
-
 const { EmojiManager } = require("./../classes/emojiManager")
+const { BaseInteraction, Client, StringSelectMenuBuilder, EmbedBuilder, ActionRowBuilder, SlashCommandBuilder, MessageFlags } = require("discord.js")
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -75,7 +68,6 @@ module.exports = {
           .setFooter({ text: process.env.FOOTER_TEXT, iconURL: serverIconURL })
           .setTimestamp();
 
-
         //Create Select Menu
         let shopSelect = new StringSelectMenuBuilder()
           .setCustomId("selectShopItem")
@@ -89,7 +81,6 @@ module.exports = {
             emoji: playEmoji,
           },
         ])
-
 
         //Check if Shop is empty
         switch (shopItems == null) {

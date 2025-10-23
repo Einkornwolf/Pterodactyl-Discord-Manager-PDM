@@ -4,16 +4,9 @@
  */
 
 const { DataBaseInterface } = require("./../classes/dataBaseInterface");
-const { BaseInteraction, Client, Message, EmbedBuilder } = require("discord.js");
+const { Client, Message, EmbedBuilder } = require("discord.js");
 const { EconomyManager } = require("./../classes/economyManager");
-const countingChannel = require("../commands/countingChannel");
 const { TranslationManager } = require("./../classes/translationManager")
-
-const dotenv = require("dotenv");
-dotenv.config({
-  path: "./config.env",
-});
-
 const { EmojiManager } = require("./../classes/emojiManager")
 const emojiManager = new EmojiManager()
 
@@ -27,7 +20,7 @@ let currentValue = 0;
 let userId;
 let lastUserId = 0;
 
-//Method for picking a random Mode
+//Pick a random Mode
 let pickMode = async function(channel, t) {
   let modes = Object.keys(states);
   let modeCount = modes.length
@@ -115,7 +108,7 @@ module.exports = {
    * @param {EconomyManager} economy
    */
   async execute(message, client, database, economy) {
-    let { guildId, author: { bot, id } } = message
+    let { author: { bot, id } } = message
     if (!message.inGuild()) return;
     if (bot) return;
     //Check if User has an Account

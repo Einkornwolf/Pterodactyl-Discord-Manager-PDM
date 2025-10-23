@@ -3,7 +3,6 @@
  * All rights reserved.
  */
 
-const { SlashCommandBuilder } = require("@discordjs/builders");
 const { TranslationManager } = require("../../../classes/translationManager")
 const { PanelManager } = require("../../../classes/panelManager")
 const { BoosterManager } = require("../../../classes/boosterManager")
@@ -11,9 +10,7 @@ const { CacheManager } = require("../../../classes/cacheManager")
 const { EconomyManager } = require("../../../classes/economyManager")
 const { LogManager } = require("../../../classes/logManager")
 const { DataBaseInterface } = require("../../../classes/dataBaseInterface")
-const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, escapeInlineCode } = require("discord.js")
-const { UtilityCollection } = require("../../../classes/utilityCollection");
-const { EmojiManager } = require("../../../classes/emojiManager")
+const { BaseInteraction, Client } = require("discord.js")
 
 module.exports = {
     customId: "triviaPlayerMedium",

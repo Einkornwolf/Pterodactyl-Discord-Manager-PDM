@@ -4,7 +4,6 @@
  */
 
 const Canvas = require("@napi-rs/canvas");
-const { request } = require("undici");
 class SeasonPassManager {
     /**
      * Manager for the Season Pass

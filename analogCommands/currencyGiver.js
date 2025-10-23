@@ -4,7 +4,7 @@
  */
 
 const { DataBaseInterface } = require("./../classes/dataBaseInterface");
-const { BaseInteraction, Client, Message } = require("discord.js");
+const { Client, Message } = require("discord.js");
 const { EconomyManager } = require("./../classes/economyManager");
 
 module.exports = {
@@ -18,7 +18,7 @@ module.exports = {
    * @param {EconomyManager} economy
    */
   async execute(message, client, database, economy) {
-    let { guildId, author: { bot, id } } = message
+    let { author: { bot, id } } = message
     if (!message.inGuild()) return;
     if (bot) return;
     //Check if User has an Account

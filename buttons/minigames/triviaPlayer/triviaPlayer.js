@@ -3,7 +3,6 @@
  * All rights reserved.
  */
 
-const { SlashCommandBuilder } = require("@discordjs/builders");
 const { TranslationManager } = require("../../../classes/translationManager")
 const { PanelManager } = require("../../../classes/panelManager")
 const { BoosterManager } = require("../../../classes/boosterManager")
@@ -11,15 +10,9 @@ const { CacheManager } = require("../../../classes/cacheManager")
 const { EconomyManager } = require("../../../classes/economyManager")
 const { LogManager } = require("../../../classes/logManager")
 const { DataBaseInterface } = require("../../../classes/dataBaseInterface")
-const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, escapeInlineCode, ComponentType, MessageFlags } = require("discord.js")
-const { UtilityCollection } = require("../../../classes/utilityCollection");
+const { BaseInteraction, Client, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ComponentType, MessageFlags } = require("discord.js")
 const { request } = require("undici");
-
-const dotenv = require("dotenv");
-dotenv.config({ path: "./config.env" });
-
 const { EmojiManager } = require("../../../classes/emojiManager")
-
 
 module.exports = {
     customId: "triviaPlayer",

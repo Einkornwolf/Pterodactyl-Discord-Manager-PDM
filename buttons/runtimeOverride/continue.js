@@ -3,7 +3,6 @@
  * All rights reserved.
  */
 
-const { SlashCommandBuilder } = require("@discordjs/builders");
 const { TranslationManager } = require("../../classes/translationManager")
 const { PanelManager } = require("../../classes/panelManager")
 const { BoosterManager } = require("../../classes/boosterManager")
@@ -11,13 +10,7 @@ const { CacheManager } = require("../../classes/cacheManager")
 const { EconomyManager } = require("../../classes/economyManager")
 const { LogManager } = require("../../classes/logManager")
 const { DataBaseInterface } = require("../../classes/dataBaseInterface")
-const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, MessageFlags } = require("discord.js")
-
-const dotenv = require("dotenv");
-dotenv.config({
-  path: "./config.env",
-});
-
+const { BaseInteraction, Client, EmbedBuilder, MessageFlags } = require("discord.js")
 const { EmojiManager } = require("../../classes/emojiManager")
 
 module.exports = {
@@ -39,11 +32,7 @@ module.exports = {
    */
   async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t, giftCodeManager, emojiManager, uuid, serverIdentifier, runtime, price) {
     await interaction.deferReply({ flags: MessageFlags.Ephemeral });
-    const user = interaction.user;
-    const id = user.id;
-    const fetchedUser = await user.fetch(true);
-    const { accentColor } = fetchedUser;
-    const guild = interaction.guild;
+    let { user, guild } = interaction, { id } = user, fetchedUser = await user.fetch(true), { accentColor } = fetchedUser
     const serverIconURL = guild ? guild.iconURL({ dynamic: true }) : undefined;
 
     //Get ServerUserId
@@ -56,7 +45,7 @@ module.exports = {
     await panel.removeServerDeletionList(uuid)
 
     //Set Server Runtime to new Parameters
-    await panel.setServerRuntime(uuid, runtime, userId, price)
+    await panel.setServerRuntime(uuid, runtime, serverUserId, price)
 
     await logManager.logString(`Server Runtime has been overwritten for UUID ${uuid}, Runtime ${runtime}, Price ${price} for User ${userId} by ${id}`)
 

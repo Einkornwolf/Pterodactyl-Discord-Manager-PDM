@@ -3,16 +3,11 @@
  * All rights reserved.
  */
 
-const { Client, Embed, EmbedBuilder, ButtonBuilder, ActionRowBuilder } = require("discord.js");
+const { Client, EmbedBuilder } = require("discord.js");
 const { PanelManager } = require("../classes/panelManager");
 const { TranslationManager } = require("../classes/translationManager");
 const { EmojiManager } = require("../classes/emojiManager")
 var CronJob = require('cron').CronJob;
-
-const dotenv = require("dotenv");
-dotenv.config({
-  path: "./config.env",
-});
 
 module.exports = {
   customId: "dailyRuntime",
@@ -85,10 +80,8 @@ module.exports = {
           }
         }
 
-
         //Check for Servers to Delete
         if (deletionList != null) {
-          console.table(deletionList)
           let serversToDelete = deletionList.filter(server => {
             let { uuid, deletion_date: { date } } = server
             return currentDate >= new Date(date).setHours(0, 0, 0, 0)
@@ -110,10 +103,8 @@ module.exports = {
           }
         }
 
-
         //Check for servers to suspend
         if (suspensionList != null) {
-          console.table(suspensionList)
           let serversToSuspend = suspensionList.filter(server => {
             let { uuid, date_running_out: { date } } = server
             return currentDate >= new Date(date).setHours(0, 0, 0, 0)

@@ -10,15 +10,8 @@ const { CacheManager } = require("./../classes/cacheManager")
 const { EconomyManager } = require("./../classes/economyManager")
 const { LogManager } = require("./../classes/logManager")
 const { DataBaseInterface } = require("./../classes/dataBaseInterface")
-const { UtilityCollection } = require("./../classes/utilityCollection")
-const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, ButtonBuilder, MessageFlags, Embed } = require("discord.js")
-
-const dotenv = require("dotenv");
-dotenv.config({
-    path: "./config.env",
-});
-
 const { EmojiManager } = require("./../classes/emojiManager")
+const { BaseInteraction, Client, EmbedBuilder, SlashCommandBuilder, MessageFlags } = require("discord.js")
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -45,8 +38,7 @@ module.exports = {
     async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t, giftCodeManager, emojiManager) {
         //Reply to User
         await interaction.deferReply({ flags: MessageFlags.Ephemeral })
-        let { user: { id: userId, tag }, user } = interaction, fetchedUser = await user.fetch(true), { accentColor } = fetchedUser
-        const guild = interaction.guild;
+        let { user: { tag }, user, guild } = interaction, fetchedUser = await user.fetch(true), { accentColor } = fetchedUser
         const serverIconURL = guild ? guild.iconURL({ dynamic: true }) : undefined
         let channel = interaction.options.getChannel("channel")
 
@@ -99,8 +91,6 @@ module.exports = {
 
 
         await channel.send({ embeds: [start_embed_int] })
-
-
         await logManager.logString("Channel for the Counting System has been set to " + channel.name + " with ID: " + channel.id + " by " + user.globalName + " with ID: " + user.id)
     },
 };

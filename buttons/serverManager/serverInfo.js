@@ -3,7 +3,6 @@
  * All rights reserved.
  */
 
-const { SlashCommandBuilder } = require("@discordjs/builders");
 const { TranslationManager } = require("../../classes/translationManager")
 const { PanelManager } = require("../../classes/panelManager")
 const { BoosterManager } = require("../../classes/boosterManager")
@@ -11,13 +10,7 @@ const { CacheManager } = require("../../classes/cacheManager")
 const { EconomyManager } = require("../../classes/economyManager")
 const { LogManager } = require("../../classes/logManager")
 const { DataBaseInterface } = require("../../classes/dataBaseInterface")
-const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, MessageFlags } = require("discord.js")
-
-const dotenv = require("dotenv");
-dotenv.config({
-  path: "./config.env",
-});
-
+const { BaseInteraction, Client, EmbedBuilder, MessageFlags } = require("discord.js")
 const { EmojiManager } = require("../../classes/emojiManager")
 
 
@@ -39,14 +32,8 @@ module.exports = {
    * @param {EmojiManager} emojiManager
    */
   async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t, giftCodeManager, emojiManager) {
-  await interaction.deferReply({ flags: MessageFlags.Ephemeral });
-    let { message: { embeds } } = interaction;
-    const user = interaction.user;
-    const id = user.id;
-    const tag = user.tag;
-    const fetchedUser = await user.fetch(true);
-    const { accentColor } = fetchedUser;
-    const guild = interaction.guild;
+    await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+    let { user, guild, message: { embeds } } = interaction, { id, tag } = user, fetchedUser = await user.fetch(true), { accentColor } = fetchedUser
     const serverIconURL = guild ? guild.iconURL({ dynamic: true }) : undefined;
     //Get Server ID
     let { data: { fields, title } } = embeds[0];
@@ -59,7 +46,7 @@ module.exports = {
     let installStatus = await panel.getInstallStatus(server ? server.attributes.identifier : undefined);
 
     //Check if Server is available or is still being installed or deleted
-    if (typeof(server) == undefined || !server || installStatus == false) {
+    if (typeof (server) == undefined || !server || installStatus == false) {
       await interaction.editReply({
         embeds: [
           new EmbedBuilder()
@@ -122,16 +109,16 @@ module.exports = {
       .addFields({ name: `${await emojiManager.getEmoji("emoji_arrow_down_right")} ${await t("serverinfo.user")}`, value: `\`\`\`js\n${serverUser}\`\`\``, inline: true })
       .addFields({ name: `${await emojiManager.getEmoji("emoji_arrow_down_right")} ${await t("serverinfo.image")}`, value: `\`\`\`js\n${image}\`\`\``, inline: true })
       .addFields({ name: `${await emojiManager.getEmoji("emoji_arrow_down_right")} ${await t("serverinfo.startup")}`, value: `\`\`\`js\n${startup_command}\`\`\``, inline: false })
-      .addFields({ name: `${await emojiManager.getEmoji("emoji_arrow_down_right")} ${await t("serverinfo.location")}`, value: `\`\`\`js\n${P_SERVER_LOCATION}\`\`\``, inline: true,})
- 
+      .addFields({ name: `${await emojiManager.getEmoji("emoji_arrow_down_right")} ${await t("serverinfo.location")}`, value: `\`\`\`js\n${P_SERVER_LOCATION}\`\`\``, inline: true, })
+
     //Send Embed
     await interaction.editReply({
       embeds: [serverEmbed],
       flags: MessageFlags.Ephemeral,
     });
- 
+
     //Logging
     await logManager.logString(`${tag} requested additional information of his Server with the identifier ${uuid}`)
-     return;
-   },
- };
+    return;
+  },
+};

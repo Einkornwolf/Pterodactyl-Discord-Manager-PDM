@@ -4,12 +4,8 @@
  */
 
 const { DataBaseInterface } = require("./dataBaseInterface")
-const dotenv = require("dotenv");
 const database = new DataBaseInterface()
 const fs = require("fs");
-dotenv.config({
-    path: "./../config.env",
-  });
 const defaultLanguageShort = process.env.DEFAULT_LANGUAGE
 
 class TranslationManager {

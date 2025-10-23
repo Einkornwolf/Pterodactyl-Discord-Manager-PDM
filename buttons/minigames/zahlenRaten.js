@@ -3,7 +3,6 @@
  * All rights reserved.
  */
 
-const { SlashCommandBuilder } = require("@discordjs/builders");
 const { TranslationManager } = require("../../classes/translationManager")
 const { PanelManager } = require("../../classes/panelManager")
 const { BoosterManager } = require("../../classes/boosterManager")
@@ -11,16 +10,8 @@ const { CacheManager } = require("../../classes/cacheManager")
 const { EconomyManager } = require("../../classes/economyManager")
 const { LogManager } = require("../../classes/logManager")
 const { DataBaseInterface } = require("../../classes/dataBaseInterface")
-const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, escapeInlineCode, MessageFlags } = require("discord.js")
+const { BaseInteraction, Client, EmbedBuilder, MessageFlags } = require("discord.js")
 const { UtilityCollection } = require("../../classes/utilityCollection");
-
-const dotenv = require("dotenv");
-dotenv.config({
-  path: "./config.env",
-});
-
-const { EmojiManager } = require("../../classes/emojiManager")
-
 
 module.exports = {
   customId: "zahlenRaten",
@@ -39,7 +30,6 @@ module.exports = {
    */
   async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t, giftCodeManager, emojiManager) {
     await interaction.deferReply({ flags: MessageFlags.Ephemeral });
-    // saubere Destrukturierung
     const user = interaction.user;
     const id = user.id;
     const tag = user.tag;
@@ -51,7 +41,6 @@ module.exports = {
     const userBalance = await economyManager.getUserBalance(id);
     const userDaily = await economyManager.getUserDaily(id);
     let utility = new UtilityCollection()
-    //Einsatz Embeds und Select
 
     const einsatzEmbed = new EmbedBuilder()
       .setTitle(`${await emojiManager.getEmoji("emoji_logo")} ${await t("minigames_events.bet_label")}`)
