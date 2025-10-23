@@ -10,15 +10,8 @@ const { CacheManager } = require("./../classes/cacheManager")
 const { EconomyManager } = require("./../classes/economyManager")
 const { LogManager } = require("./../classes/logManager")
 const { DataBaseInterface } = require("./../classes/dataBaseInterface")
-const { UtilityCollection } = require("./../classes/utilityCollection")
-const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, MessageFlags } = require("discord.js")
-
-const dotenv = require("dotenv");
-dotenv.config({
-    path: "./config.env",
-});
-
 const { EmojiManager } = require("./../classes/emojiManager")
+const { BaseInteraction, Client, EmbedBuilder, MessageFlags } = require("discord.js")
 
 module.exports = {
     customId: "linkModal",
@@ -40,8 +33,7 @@ module.exports = {
     async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t, giftCodeManager, emojiManager) {
         await interaction.deferReply({ flags: MessageFlags.Ephemeral })
         //Get Modal Data
-        let { fields, user: { id, tag }, user } = interaction, apiKey = fields.getTextInputValue("userAPI"), fetchedUser = await user.fetch(true), { accentColor } = fetchedUser
-        const guild = interaction.guild;
+        let { fields, user: { id, tag }, user, guild } = interaction, apiKey = fields.getTextInputValue("userAPI"), fetchedUser = await user.fetch(true), { accentColor } = fetchedUser
         const serverIconURL = guild ? guild.iconURL({ dynamic: true }) : undefined
         //Add User to Database and API
         let eMail = await panel.getUserEmailFromAPIKey(apiKey);
@@ -98,7 +90,6 @@ module.exports = {
         await databaseInterface.setUser(id, eMail, name)
         //Logging
         await logManager.logString(`${tag} has been added to the Bot-Database. Credentials: ${eMail}, ${name}`)
-
 
         //Account Link sucessfull
         //Reply to User

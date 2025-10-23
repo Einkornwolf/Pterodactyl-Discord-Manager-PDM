@@ -22,11 +22,6 @@ const logManager = new LogManager()
 const giftCodeManager = new GiftCodeManager()
 const emojiManager = new EmojiManager();
 const panel = new PanelManager(process.env.PTERODACTYL_API_URL, process.env.PTERODACTYL_API_KEY, process.env.PTERODACTYL_ACCOUNT_API_KEY)
-const dotenv = require("dotenv");
-dotenv.config({
-    path: "./../config.env",
-});
-
 
 module.exports = {
     name: "interactionCreate",
@@ -38,7 +33,6 @@ module.exports = {
      * @param {Client} client
      */
     async execute(interaction, client) {
-        // Hier mit Fehlermeldung antworten, wenn du das möchtest
         if (!interaction.inGuild()) return;
         let translationManager = new TranslationManager(interaction.user.id)
         const t = async function (key) {

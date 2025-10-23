@@ -10,13 +10,8 @@ const { CacheManager } = require("../../classes/cacheManager")
 const { EconomyManager } = require("../../classes/economyManager")
 const { LogManager } = require("../../classes/logManager")
 const { DataBaseInterface } = require("../../classes/dataBaseInterface")
-const { UtilityCollection } = require("../../classes/utilityCollection")
 const { EmojiManager } = require("../../classes/emojiManager")
-const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, ButtonStyle, MessageFlags } = require("discord.js")
-const dotenv = require("dotenv");
-dotenv.config({
-    path: "./config.env",
-});
+const { BaseInteraction, Client, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, MessageFlags } = require("discord.js")
 
 module.exports = {
     customId: "giftCodeSelect",
@@ -36,9 +31,7 @@ module.exports = {
      * @returns
      */
     async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t, giftCodeManager, emojiManager) {
-        let { user: { id, tag }, user, values } = interaction, giftCodes = await databaseInterface.getObject("gift_codes_list"), fetchedUser = await user.fetch(true), { accentColor } = fetchedUser
-
-        const guild = interaction.guild;
+        let {user, guild } = interaction, giftCodes = await databaseInterface.getObject("gift_codes_list"), fetchedUser = await user.fetch(true), { accentColor } = fetchedUser
         const serverIconURL = guild ? guild.iconURL({ dynamic: true }) : undefined;
 
         //Add code item

@@ -12,7 +12,6 @@ const { LogManager } = require("./../../classes/logManager")
 const { DataBaseInterface } = require("./../../classes/dataBaseInterface")
 const { EmojiManager } = require("../../classes/emojiManager")
 const { BaseInteraction, Client, EmbedBuilder, MessageFlags } = require("discord.js")
-const dotenv = require('dotenv');
 
 module.exports = {
   customId: "createSelectedItem",
@@ -34,13 +33,10 @@ module.exports = {
     const { user: { id: userId, tag }, values, user, guild } = interaction;
     const serverIconURL = guild ? guild.iconURL({ dynamic: true }) : undefined;
 
-    dotenv.config({
-      path: './config.env'
-    })
-
     const shopItems = await databaseInterface.getObject("shop_items_servers");
     const selectedValue = Array.isArray(values) ? values[0] : values;
     const itemIndex = parseInt(selectedValue, 10);
+    
     //Error Handling if Shop is Empty or the Item is faulty
     if (!shopItems || !Array.isArray(shopItems) || shopItems.length === 0) {
       await interaction.deferReply({ flags: MessageFlags.Ephemeral });

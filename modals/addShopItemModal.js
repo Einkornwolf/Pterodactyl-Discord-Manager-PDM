@@ -10,15 +10,8 @@ const { CacheManager } = require("./../classes/cacheManager")
 const { EconomyManager } = require("./../classes/economyManager")
 const { LogManager } = require("./../classes/logManager")
 const { DataBaseInterface } = require("./../classes/dataBaseInterface")
-const { UtilityCollection } = require("./../classes/utilityCollection")
-const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, MessageFlags } = require("discord.js")
-
-const dotenv = require("dotenv");
-dotenv.config({
-  path: "./config.env",
-});
-
 const { EmojiManager } = require("./../classes/emojiManager")
+const { BaseInteraction, Client, EmbedBuilder, ActionRowBuilder, ButtonBuilder, MessageFlags } = require("discord.js")
 
 module.exports = {
   customId: "addShopItemModal",
@@ -39,9 +32,7 @@ module.exports = {
    */
   async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t, giftCodeManager, emojiManager) {
     await interaction.deferReply({ flags: MessageFlags.Ephemeral });
-    let { fields, user: { id }, user } = interaction, itemName = fields.getTextInputValue("itemName"), itemPrice = fields.getTextInputValue("itemPrice"), itemDescription = fields.getTextInputValue("itemDescription"), itemRuntime = fields.getTextInputValue("itemRuntime"), fetchedUser = await user.fetch(true), { accentColor } = fetchedUser, itemType = "server"// maybe in the next api update :("item_type_selector ).data.values[0]
-
-    const guild = interaction.guild;
+    let { fields, user: { id }, user, guild } = interaction, itemName = fields.getTextInputValue("itemName"), itemPrice = fields.getTextInputValue("itemPrice"), itemDescription = fields.getTextInputValue("itemDescription"), itemRuntime = fields.getTextInputValue("itemRuntime"), fetchedUser = await user.fetch(true), { accentColor } = fetchedUser, itemType = "server"// maybe in the next update :("item_type_selector ).data.values[0]
     const serverIconURL = guild ? guild.iconURL({ dynamic: true }) : undefined
 
     let data = {

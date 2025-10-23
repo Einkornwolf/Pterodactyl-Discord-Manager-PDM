@@ -10,15 +10,8 @@ const { CacheManager } = require("./../classes/cacheManager")
 const { EconomyManager } = require("./../classes/economyManager")
 const { LogManager } = require("./../classes/logManager")
 const { DataBaseInterface } = require("./../classes/dataBaseInterface")
-const { UtilityCollection } = require("./../classes/utilityCollection")
-const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, MessageFlags } = require("discord.js")
-
-const dotenv = require("dotenv");
-dotenv.config({
-  path: "./config.env",
-});
-
 const { EmojiManager } = require("./../classes/emojiManager")
+const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, MessageFlags } = require("discord.js")
 
 module.exports = {
   customId: "addServerItemModal",
@@ -39,9 +32,7 @@ module.exports = {
    */
   async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t, giftCodeManager, emojiManager) {
     await interaction.deferReply({ flags: MessageFlags.Ephemeral });
-    let { fields, user: { tag, id }, user } = interaction, itemEggId = fields.getTextInputValue("serverEggId"), itemDatabases = fields.getTextInputValue("serverDatabases"), fetchedUser = await user.fetch(true), { accentColor } = fetchedUser
-
-    const guild = interaction.guild;
+    let { fields, user: { id }, user, guild } = interaction, itemEggId = fields.getTextInputValue("serverEggId"), itemDatabases = fields.getTextInputValue("serverDatabases"), fetchedUser = await user.fetch(true), { accentColor } = fetchedUser
     const serverIconURL = guild ? guild.iconURL({ dynamic: true }) : undefined
 
     //Get Data from cache
@@ -58,7 +49,6 @@ module.exports = {
 
     //Write to Cache
     await cacheManager.cacheData(id, data)
-
 
     const confirmEmoji = emojiManager.parseEmoji(await emojiManager.getEmoji("emoji_confirm")) || "✅";
     const denyEmoji = emojiManager.parseEmoji(await emojiManager.getEmoji("emoji_deny")) || "❌";

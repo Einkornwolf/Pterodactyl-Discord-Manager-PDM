@@ -11,7 +11,6 @@ const { EconomyManager } = require("../../classes/economyManager")
 const { LogManager } = require("../../classes/logManager")
 const { DataBaseInterface } = require("../../classes/dataBaseInterface")
 const { EmojiManager } = require("../../classes/emojiManager")
-const dotenv = require('dotenv');
 const { BaseInteraction, Client, EmbedBuilder, ActionRowBuilder, ButtonBuilder, MessageFlags } = require("discord.js")
 
 module.exports = {
@@ -34,11 +33,7 @@ module.exports = {
   async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t, giftCodeManager, emojiManager) {
     let { user, values, guild } = interaction, shopItems = await databaseInterface.getObject("shop_items_servers"), fetchedUser = await user.fetch(true), { accentColor } = fetchedUser
 
-    const serverIconURL = guild.iconURL({ dynamic: true });
-
-    dotenv.config({
-      path: './config.env'
-    })
+    const serverIconURL = guild ? guild.iconURL({ dynamic: true }) : undefined;
 
     //Add item to shop
     if (interaction.values == "addShopItem") {

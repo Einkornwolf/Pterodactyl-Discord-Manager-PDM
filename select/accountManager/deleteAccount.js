@@ -10,15 +10,8 @@ const { CacheManager } = require("../../classes/cacheManager")
 const { EconomyManager } = require("./../../classes/economyManager")
 const { LogManager } = require("./../../classes/logManager")
 const { DataBaseInterface } = require("./../../classes/dataBaseInterface")
-const { UtilityCollection } = require("./../../classes/utilityCollection")
-const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, MessageFlags } = require("discord.js")
-
-const dotenv = require("dotenv");
-dotenv.config({
-    path: "./config.env",
-});
-
 const { EmojiManager } = require("../../classes/emojiManager")
+const { BaseInteraction, Client, EmbedBuilder, MessageFlags } = require("discord.js")
 
 module.exports = {
     customId: "deleteAccount",
@@ -39,15 +32,10 @@ module.exports = {
      * @returns
      */
     async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t, giftCodeManager, emojiManager) {
-        let { user: { id, tag }, user, channel } = interaction;
-        let fetchedUser = await user.fetch(true);
-        let { accentColor } = fetchedUser;
-        let userData = await databaseInterface.getObject(id);
-
-        const guild = interaction.guild;
+        await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+        let { user: { id, tag }, user, channel, guild } = interaction, fetchedUser = await user.fetch(true), { accentColor } = fetchedUser, userData = await databaseInterface.getObject(id);
         const serverIconURL = guild ? guild.iconURL({ dynamic: true }) : undefined;
 
-        await interaction.deferReply({ flags: MessageFlags.Ephemeral });
         if (!userData) {
             await interaction.editReply({
                 embeds: [

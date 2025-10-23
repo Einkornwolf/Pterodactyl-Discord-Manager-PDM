@@ -10,15 +10,8 @@ const { CacheManager } = require("./../classes/cacheManager")
 const { EconomyManager } = require("./../classes/economyManager")
 const { LogManager } = require("./../classes/logManager")
 const { DataBaseInterface } = require("./../classes/dataBaseInterface")
-const { UtilityCollection } = require("./../classes/utilityCollection")
-const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, MessageFlags } = require("discord.js")
-
-const dotenv = require("dotenv");
-dotenv.config({
-  path: "./config.env",
-});
-
 const { EmojiManager } = require("./../classes/emojiManager")
+const { BaseInteraction, Client, EmbedBuilder, MessageFlags } = require("discord.js")
 
 module.exports = {
   customId: "renameModal",
@@ -39,9 +32,9 @@ module.exports = {
    */
   async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t, giftCodeManager, emojiManager) {
   await interaction.deferReply({ flags: MessageFlags.Ephemeral })
-    let { fields, message: { embeds }, user: { id, tag }, user } = interaction, { fields: embedFields } = embeds[0], { value } = embedFields[3]  , fetchedUser = await user.fetch(true), { accentColor } = fetchedUser, uuidField = value.substring(6), uuid = uuidField.substring(0, uuidField.length-3)
-    const guild = interaction.guild;
+    let { fields, message: { embeds }, user: { id, tag }, user, guild } = interaction, { fields: embedFields } = embeds[0], { value } = embedFields[3]  , fetchedUser = await user.fetch(true), { accentColor } = fetchedUser, uuidField = value.substring(6), uuid = uuidField.substring(0, uuidField.length-3)
     const serverIconURL = guild ? guild.iconURL({ dynamic: true }) : undefined
+
     //Get server data
     let newServerName = fields.getTextInputValue("serverRenameText"), userData = await databaseInterface.getObject(id), { e_mail } = userData, userServers = await panel.getAllServers(e_mail)
     let server = userServers.find(server => {
@@ -49,6 +42,7 @@ module.exports = {
       return objectUuid == uuid
     })
     let { attributes: { identifier } } = server
+    
     //Rename Server
     await panel.renameServer(identifier, newServerName)
     await interaction.editReply({

@@ -10,15 +10,8 @@ const { CacheManager } = require("./../classes/cacheManager")
 const { EconomyManager } = require("./../classes/economyManager")
 const { LogManager } = require("./../classes/logManager")
 const { DataBaseInterface } = require("./../classes/dataBaseInterface")
-const { UtilityCollection } = require("./../classes/utilityCollection")
-const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, MessageFlags } = require("discord.js")
-
-const dotenv = require("dotenv");
-dotenv.config({
-  path: "./config.env",
-});
-
 const { EmojiManager } = require("./../classes/emojiManager")
+const { BaseInteraction, Client, EmbedBuilder, MessageFlags } = require("discord.js")
 
 module.exports = {
   customId: "creationModal",
@@ -40,9 +33,9 @@ module.exports = {
   async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t, giftCodeManager, emojiManager) {
   await interaction.deferReply({ flags: MessageFlags.Ephemeral })
     //Get Modal Data
-    let { fields, user: { id, tag }, user } = interaction, eMail = fields.getTextInputValue("usereMail"), name = fields.getTextInputValue("userName"), fetchedUser = await user.fetch(true), { accentColor } = fetchedUser
-    const guild = interaction.guild;
+    let { fields, user: { id, tag }, user, guild } = interaction, eMail = fields.getTextInputValue("usereMail"), name = fields.getTextInputValue("userName"), fetchedUser = await user.fetch(true), { accentColor } = fetchedUser
     const serverIconURL = guild ? guild.iconURL({ dynamic: true }) : undefined
+
     //Add User to Database and API
     let status, userRequest
     try {
@@ -53,7 +46,6 @@ module.exports = {
     await databaseInterface.setUser(id, eMail, name)
     //Logging
     await logManager.logString(`${tag} has been added to the Bot-Database. Credentials: ${eMail}, ${name}`)
-
 
     //Account Creation Failed
     if (status != 201) {
@@ -69,14 +61,12 @@ module.exports = {
     flags: MessageFlags.Ephemeral,
       });
 
-
       //Logging
       await logManager.logString(`${tag}'s credentials could not be added to Panel. Process has been aborted and their credentials were deleted from the Bot-Database.`)
       //Remove Account from Database due to failed Panel Creation
       await databaseInterface.deleteUser(id)
       return;
     }
-
 
     //Account Creation sucessfull
     let { config: { data } } = userRequest, { password } = JSON.parse(data)

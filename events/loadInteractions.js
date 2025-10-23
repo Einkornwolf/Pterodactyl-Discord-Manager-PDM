@@ -8,11 +8,6 @@ const { EconomyManager } = require("../classes/economyManager");
 const { PanelManager } = require("../classes/panelManager");
 const { DataBaseInterface } = require("../classes/dataBaseInterface")
 const { EmojiManager } = require("../classes/emojiManager")
-const fs = require("fs")
-const dotenv = require("dotenv");
-dotenv.config({
-  path: "./../config.env",
-});
 
 const database = new DataBaseInterface()
 const panel = new PanelManager(process.env.PTERODACTYL_API_URL, process.env.PTERODACTYL_API_KEY, process.env.PTERODACTYL_ACCOUNT_API_KEY)
@@ -35,6 +30,7 @@ module.exports = {
     await client.loadCronJobs();
 
     //Start Cronjobs
+    
     //Reset Job
     let cronJob = client.cronJobs.get("dailyReset");
     await cronJob.execute(client, new EconomyManager());

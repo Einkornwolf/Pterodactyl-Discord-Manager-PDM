@@ -10,16 +10,9 @@ const { CacheManager } = require("./../classes/cacheManager")
 const { EconomyManager } = require("./../classes/economyManager")
 const { LogManager } = require("./../classes/logManager")
 const { DataBaseInterface } = require("./../classes/dataBaseInterface")
-const { UtilityCollection } = require("./../classes/utilityCollection")
-const { GiftCodeManager } = require("./../classes/giftCodeManager")
-const { BaseInteraction, Client, StringSelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, SelectMenuOptionBuilder, ComponentType, SelectMenuComponent, SelectMenuInteraction, MessageFlags } = require("discord.js")
-
-const dotenv = require("dotenv");
-dotenv.config({
-    path: "./config.env",
-});
-
 const { EmojiManager } = require("./../classes/emojiManager")
+const { GiftCodeManager } = require("./../classes/giftCodeManager")
+const { BaseInteraction, Client, StringSelectMenuBuilder, EmbedBuilder, ActionRowBuilder, ComponentType, MessageFlags } = require("discord.js")
 
 module.exports = {
     customId: "addCodeItemModal",
@@ -41,8 +34,7 @@ module.exports = {
      */
     async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t, giftCodeManager, emojiManager) {
         await interaction.deferReply({ flags: MessageFlags.Ephemeral });
-        let { fields, user: { tag, id }, user } = interaction, fetchedUser = await user.fetch(true), { accentColor } = fetchedUser
-        const guild = interaction.guild;
+        let { fields, user: { id }, user, guild } = interaction, fetchedUser = await user.fetch(true), { accentColor } = fetchedUser
         const serverIconURL = guild ? guild.iconURL({ dynamic: true }) : undefined
         let itemCode = fields.getTextInputValue("itemCode"), itemValue = fields.getTextInputValue("itemValue")
 
@@ -100,7 +92,6 @@ module.exports = {
             let singleUser = i.values[0]
             //Add Code
             await giftCodeManager.createGiftCode(itemCode, itemValue, singleUser)
-
             await logManager.logString(`Giftcode: ${itemCode} with Value of: ${itemValue} and Type of ${singleUser} has been created by ${user.tag}`)
 
             await i.deferReply({ flags: MessageFlags.Ephemeral })

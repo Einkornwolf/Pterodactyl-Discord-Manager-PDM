@@ -15,10 +15,6 @@ const { DataBaseInterface } = require("./../classes/dataBaseInterface")
 const { UtilityCollection } = require("./../classes/utilityCollection")
 const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, MessageFlags } = require("discord.js")
 
-const dotenv = require("dotenv");
-dotenv.config({
-  path: "./config.env",
-});
 
 const { EmojiManager } = require("./../classes/emojiManager")
 

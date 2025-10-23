@@ -10,9 +10,8 @@ const { CacheManager } = require("./../../classes/cacheManager")
 const { EconomyManager } = require("./../../classes/economyManager")
 const { LogManager } = require("./../../classes/logManager")
 const { DataBaseInterface } = require("./../../classes/dataBaseInterface")
-const { UtilityCollection } = require("./../../classes/utilityCollection")
 const { EmojiManager } = require("../../classes/emojiManager")
-const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = require("discord.js")
+const { BaseInteraction, Client } = require("discord.js")
 
 module.exports = {
   customId: "accountSelect",
@@ -33,7 +32,7 @@ module.exports = {
    * @returns
    */
   async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t, giftCodeManager, emojiManager) {
-    let { user, values } = interaction
+    let { values } = interaction
 
     //User selected Create User
     if (values == "createAccount") {
