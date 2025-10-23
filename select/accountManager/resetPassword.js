@@ -32,10 +32,10 @@ module.exports = {
      * @returns
      */
     async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t, giftCodeManager, emojiManager) {
+        await interaction.deferReply({ flags: MessageFlags.Ephemeral });
         let { user: { id, tag }, user, guild } = interaction, fetchedUser = await user.fetch(true), { accentColor } = fetchedUser, userData = await databaseInterface.getObject(id)
         const serverIconURL = guild ? guild.iconURL({ dynamic: true }) : undefined
 
-        await interaction.deferReply({ flags: MessageFlags.Ephemeral });
         if (!userData) {
             //Reply to User
             await interaction.editReply({

@@ -36,6 +36,7 @@ module.exports = {
     const shopItems = await databaseInterface.getObject("shop_items_servers");
     const selectedValue = Array.isArray(values) ? values[0] : values;
     const itemIndex = parseInt(selectedValue, 10);
+    
     //Error Handling if Shop is Empty or the Item is faulty
     if (!shopItems || !Array.isArray(shopItems) || shopItems.length === 0) {
       await interaction.deferReply({ flags: MessageFlags.Ephemeral });

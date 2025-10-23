@@ -20,7 +20,7 @@ module.exports = {
    * @param {Discord.Client} client
    */
   async execute(message, client) {
-    //ADD 1 COIN TO USER
+    //ADD COINS TO USER
     let analogCommand = client.analogCommands.get("currencyGiver");
     await analogCommand.execute(message, client, database, economyManager);
 
