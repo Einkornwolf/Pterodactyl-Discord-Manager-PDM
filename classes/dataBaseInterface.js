@@ -4,8 +4,6 @@
  */
 
 const { QuickDB } = require('quick.db');
-
-
 const database = new QuickDB({ filePath: "database/json.sqlite" })
 
 class DataBaseInterface {

@@ -3,7 +3,6 @@
  * All rights reserved.
  */
 
-const { SlashCommandBuilder } = require("@discordjs/builders");
 const { TranslationManager } = require("../../classes/translationManager")
 const { PanelManager } = require("../../classes/panelManager")
 const { BoosterManager } = require("../../classes/boosterManager")
@@ -11,14 +10,7 @@ const { CacheManager } = require("../../classes/cacheManager")
 const { EconomyManager } = require("../../classes/economyManager")
 const { LogManager } = require("../../classes/logManager")
 const { DataBaseInterface } = require("../../classes/dataBaseInterface")
-const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, MessageFlags } = require("discord.js");
-const { data } = require("../../commands/serverManager");
-
-const dotenv = require("dotenv");
-dotenv.config({
-  path: "./config.env",
-});
-
+const { BaseInteraction, Client, EmbedBuilder, ActionRowBuilder, ButtonBuilder, MessageFlags } = require("discord.js");
 const { EmojiManager } = require("../../classes/emojiManager")
 
 module.exports = {
@@ -54,10 +46,7 @@ module.exports = {
       flags: MessageFlags.Ephemeral
     });
 
-    let { user: { tag, id, accentColor }, message: { embeds } } = interaction, { data: { fields } } = embeds[0], { value } = fields[0], itemIndex = value.replaceAll("`", "")
-    let textToSplit = interaction.message.embeds[0].data.fields[0].value;
-
-    const guild = interaction.guild;
+    let { user: { accentColor }, message: { embeds }, guild } = interaction, { data: { fields } } = embeds[0], { value } = fields[0], itemIndex = value.replaceAll("`", "")
     const serverIconURL = guild ? guild.iconURL({ dynamic: true }) : undefined;
 
     //Delete item from database

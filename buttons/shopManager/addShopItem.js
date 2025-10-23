@@ -3,7 +3,6 @@
  * All rights reserved.
  */
 
-const { SlashCommandBuilder } = require("@discordjs/builders");
 const { TranslationManager } = require("../../classes/translationManager")
 const { PanelManager } = require("../../classes/panelManager")
 const { BoosterManager } = require("../../classes/boosterManager")
@@ -11,13 +10,7 @@ const { CacheManager } = require("../../classes/cacheManager")
 const { EconomyManager } = require("../../classes/economyManager")
 const { LogManager } = require("../../classes/logManager")
 const { DataBaseInterface } = require("../../classes/dataBaseInterface")
-const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, MessageFlags } = require("discord.js")
-
-const dotenv = require("dotenv");
-dotenv.config({
-  path: "./config.env",
-});
-
+const { BaseInteraction, Client, EmbedBuilder, ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, MessageFlags } = require("discord.js")
 const { EmojiManager } = require("../../classes/emojiManager")
 
 
@@ -39,14 +32,10 @@ module.exports = {
    * @param {EmojiManager} emojiManager
    */
   async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t, giftCodeManager, emojiManager) {
-    const user = interaction.user;
-    const id = user.id;
-    const tag = user.tag;
-    const fetchedUser = await user.fetch(true);
-    const { accentColor } = fetchedUser;
-    const guild = interaction.guild;
+    let { user, guild } = interaction, { tag } = user, fetchedUser = await user.fetch(true), { accentColor } = fetchedUser
     const serverIconURL = guild ? guild.iconURL({ dynamic: true }) : undefined;
     let shopItems = await databaseInterface.getObject("shop_items_servers") || [];
+
     //Check if there are more than 24 items currently in the shop
     switch (shopItems.length >= 24) {
       //More than 24 Items

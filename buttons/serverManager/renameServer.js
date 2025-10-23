@@ -3,7 +3,6 @@
  * All rights reserved.
  */
 
-const { SlashCommandBuilder } = require("@discordjs/builders")
 const { TranslationManager } = require("../../classes/translationManager")
 const { PanelManager } = require("../../classes/panelManager")
 const { BoosterManager } = require("../../classes/boosterManager")
@@ -11,13 +10,7 @@ const { CacheManager } = require("../../classes/cacheManager")
 const { EconomyManager } = require("../../classes/economyManager")
 const { LogManager } = require("../../classes/logManager")
 const { DataBaseInterface } = require("../../classes/dataBaseInterface")
-const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, MessageFlags } = require("discord.js")
-
-const dotenv = require("dotenv");
-dotenv.config({
-  path: "./config.env",
-});
-
+const { BaseInteraction, Client, EmbedBuilder, ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, MessageFlags } = require("discord.js")
 const { EmojiManager } = require("../../classes/emojiManager")
 
 module.exports = {
@@ -37,19 +30,13 @@ module.exports = {
    * @param {EmojiManager} emojiManager
    */
   async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t, giftCodeManager, emojiManager) {
-    let { message: { embeds } } = interaction;
-    const user = interaction.user;
-    const id = user.id;
-    const tag = user.tag;
-    const fetchedUser = await user.fetch(true);
-    const { accentColor } = fetchedUser;
-    const guild = interaction.guild;
+    let { user, guild, message: { embeds } } = interaction, { id } = user, fetchedUser = await user.fetch(true), { accentColor } = fetchedUser
     const serverIconURL = guild ? guild.iconURL({ dynamic: true }) : undefined;
+
     //Get Server ID
     let { data: { fields, title } } = embeds[0];
     let { value } = fields[3];
     let serverUuid = (value.substring(6)).substring(0, (value.substring(6).length - 3));
-    let serverIndex = title.slice(title.lastIndexOf("#") + 1);
     let userData = await databaseInterface.getObject(id);
     let userServers = await panel.getAllServers(userData.e_mail);
     let server = userServers.find(server => server.attributes.uuid == serverUuid);

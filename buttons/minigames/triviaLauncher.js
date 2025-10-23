@@ -3,7 +3,6 @@
  * All rights reserved.
  */
 
-const { SlashCommandBuilder } = require("@discordjs/builders");
 const { TranslationManager } = require("../../classes/translationManager")
 const { PanelManager } = require("../../classes/panelManager")
 const { BoosterManager } = require("../../classes/boosterManager")
@@ -11,14 +10,7 @@ const { CacheManager } = require("../../classes/cacheManager")
 const { EconomyManager } = require("../../classes/economyManager")
 const { LogManager } = require("../../classes/logManager")
 const { DataBaseInterface } = require("../../classes/dataBaseInterface")
-const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, escapeInlineCode, MessageFlags } = require("discord.js")
-const { UtilityCollection } = require("../../classes/utilityCollection");
-
-const dotenv = require("dotenv");
-dotenv.config({
-  path: "./config.env",
-});
-
+const { BaseInteraction, Client, EmbedBuilder, ActionRowBuilder, ButtonBuilder, MessageFlags } = require("discord.js")
 const { EmojiManager } = require("../../classes/emojiManager")
 
 
@@ -41,14 +33,10 @@ module.exports = {
     async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t, giftCodeManager, emojiManager) {
     await interaction.deferReply({ flags: MessageFlags.Ephemeral });
     const user = interaction.user;
-    const userId = user.id;
-    const tag = user.tag;
     const fetchedUser = await user.fetch(true);
     const { accentColor } = fetchedUser;
     const guild = interaction.guild;
     const serverIconURL = guild ? guild.iconURL({ dynamic: true }) : undefined;
-    let utility = new UtilityCollection()
-        //Einsatz Embeds und Select
 
         const difficultyEmbed = new EmbedBuilder()
             .setTitle(`${await emojiManager.getEmoji("emoji_logo")} ${await t("minigames_events.difficulty_label")}`)

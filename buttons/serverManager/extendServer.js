@@ -3,7 +3,6 @@
  * All rights reserved.
  */
 
-const { SlashCommandBuilder } = require("@discordjs/builders");
 const { TranslationManager } = require("../../classes/translationManager")
 const { PanelManager } = require("../../classes/panelManager")
 const { BoosterManager } = require("../../classes/boosterManager")
@@ -11,13 +10,9 @@ const { CacheManager } = require("../../classes/cacheManager")
 const { EconomyManager } = require("../../classes/economyManager")
 const { LogManager } = require("../../classes/logManager")
 const { DataBaseInterface } = require("../../classes/dataBaseInterface")
-const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, MessageFlags } = require("discord.js")
-const dotenv = require("dotenv")
-dotenv.config({
-  path: "./config.env",
-});
-let priceOffset = process.env.PRICE_OFFSET;
+const { BaseInteraction, Client, EmbedBuilder, MessageFlags } = require("discord.js")
 const { EmojiManager } = require("../../classes/emojiManager")
+let priceOffset = process.env.PRICE_OFFSET;
 
 module.exports = {
   customId: "extendServer",
@@ -39,28 +34,21 @@ module.exports = {
    */
   async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t, giftCodeManager, emojiManager) {
     await interaction.deferReply({ flags: MessageFlags.Ephemeral });
-    let { message: { embeds } } = interaction;
-    const user = interaction.user;
-    const id = user.id;
-    const tag = user.tag;
-    const fetchedUser = await user.fetch(true);
-    const { accentColor } = fetchedUser;
-    const guild = interaction.guild;
+    let { user, guild, message: { embeds } } = interaction, { id } = user, fetchedUser = await user.fetch(true), { accentColor } = fetchedUser
     const serverIconURL = guild ? guild.iconURL({ dynamic: true }) : undefined;
+
     //Get Server ID
-    let { data: { fields, title } } = embeds[0];
+    let { data: { fields } } = embeds[0];
     let { value } = fields[3];
     let serverUuid = (value.substring(6)).substring(0, (value.substring(6).length - 3));
-    let serverIndex = title.slice(title.lastIndexOf("#") + 1);
     let userData = await databaseInterface.getObject(id);
     let userServers = await panel.getAllServers(userData.e_mail);
     let server = userServers.find(s => s.attributes.uuid == serverUuid);
     let installStatus = await panel.getInstallStatus(server ? server.attributes.identifier : undefined);
 
-
     //Check if Server is available or is still being installed or deleted
     //Check if Server still exists
-    if (typeof (server) == undefined || !server) {
+    if (typeof(server) == undefined || !server || installStatus == false) {
       await interaction.editReply({
         embeds: [
           new EmbedBuilder()

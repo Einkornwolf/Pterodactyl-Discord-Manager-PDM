@@ -3,7 +3,6 @@
  * All rights reserved.
  */
 
-const { SlashCommandBuilder } = require("@discordjs/builders");
 const { TranslationManager } = require("../../classes/translationManager")
 const { PanelManager } = require("../../classes/panelManager")
 const { BoosterManager } = require("../../classes/boosterManager")
@@ -11,13 +10,7 @@ const { CacheManager } = require("../../classes/cacheManager")
 const { EconomyManager } = require("../../classes/economyManager")
 const { LogManager } = require("../../classes/logManager")
 const { DataBaseInterface } = require("../../classes/dataBaseInterface")
-const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, MessageFlags } = require("discord.js")
-
-const dotenv = require("dotenv");
-dotenv.config({
-  path: "./config.env",
-});
-
+const { BaseInteraction, Client, EmbedBuilder, MessageFlags } = require("discord.js")
 const { EmojiManager } = require("../../classes/emojiManager")
 
 module.exports = {
@@ -38,10 +31,9 @@ module.exports = {
    */
   async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t, giftCodeManager, emojiManager) {
     await interaction.deferReply({ flags: MessageFlags.Ephemeral });
-    let { user: { id }, user } = interaction;
-    let fetchedUser = await user.fetch(true), { accentColor } = fetchedUser;
-    const guild = interaction.guild;
+    let { user: { id }, user, guild } = interaction, fetchedUser = await user.fetch(true), { accentColor } = fetchedUser;
     const serverIconURL = guild ? guild.iconURL({ dynamic: true }) : undefined;
+    
     //Set User Language to Selected Option
     let translate = new TranslationManager(id), langShort = "fr-FR"
     await translate.saveUserLanguage(langShort)
