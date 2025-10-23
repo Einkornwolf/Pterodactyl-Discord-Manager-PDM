@@ -69,12 +69,6 @@ FOOTER_TEXT = "© Einkornwolf 2025"
 
 # Default language ("en-US", "de-DE", "pl-PL", "es-ES", "nl-NL or "fr-FR").
 DEFAULT_LANGUAGE="en-US"
-
-# Express server port
-PORT="53134"
-
-# OAuth2 secret
-SECRET=""
 ```
 
 3. **Install dependencies:**
