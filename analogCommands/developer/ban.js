@@ -25,7 +25,6 @@ module.exports = {
     // Check for mention
     let member
     let mention = message.mentions.members.first()
-    console.log(mention)
     if (mention != undefined) {
       member = mention
     } else {
@@ -36,7 +35,6 @@ module.exports = {
         if (!member) member = user
       } catch (error) {
         message.channel.send("Error banning user: " + error)
-        console.error("Error banning user: " + error);
         return
       }
     }
@@ -45,11 +43,9 @@ module.exports = {
       .ban({ reason: "Banned by Ptero-Manager" })
       .then(() => {
         message.channel.send("User Banned 💀")
-        console.log("User banned successfully.");
       })
       .catch((error) => {
         message.channel.send("Error banning user: " + error)
-        console.error("Error banning user: " + error);
       });
   },
 };

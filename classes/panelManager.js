@@ -28,8 +28,6 @@ class PanelManager {
           return await fn();
         } catch (e) {
           const statusCode = e && e.response && e.response.status;
-          console.warn(`Panel request attempt ${attempt} failed with ${e && e.message} (status: ${statusCode})`);
-          if (e && e.stack) console.warn(e.stack);
           if ((statusCode === 504 || statusCode === 502 || statusCode === 503) && attempt < maxAttempts) {
             // backoff
             await new Promise((r) => setTimeout(r, attempt * 1000));

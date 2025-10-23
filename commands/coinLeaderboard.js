@@ -39,7 +39,6 @@ module.exports = {
 
     //Get all active Users
     let userList = await economyManager.getTopUsers()
-    console.log(userList.length)
     await userList.splice(0, userList.length - 16)
     
     let leaderEmbed = new EmbedBuilder()

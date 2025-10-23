@@ -33,6 +33,10 @@ git clone https://github.com/Einkornwolf/Pterodactyl-Discord-Manager.git
 
 ---
 
+## Special Thanks
+
+This Bot is using <https://the-trivia-api.com/> in order to aquire Trivia-Questions for a minigame. This is a Non-Commercial API.
+
 ## Installation
 
 1. **Create a configuration file** named `config.env`.

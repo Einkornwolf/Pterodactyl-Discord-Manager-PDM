@@ -101,24 +101,16 @@ module.exports = {
         return;
       }
       try {
-        // charge base bet up-front
         await economyManager.removeCoins(id, einsatz)
 
         const res = await playGame(interaction, { transition: "update", bet: einsatz, t });
         const { result, outcomes = [], dealer, multipliers = [] } = res;
 
-        // multipliers: array of 1 or 2 per hand (double)
-
-        // determine multipliers (array) and outcomes (array)
         const multipliersArr = multipliers.length ? multipliers : outcomes.map(() => 1)
 
-  // charge extra stakes for splits and doubles (we already removed the base bet once)
-  // - For each additional hand created by a split we must charge one extra base bet.
-  // - For each doubled hand we must charge an extra base bet (multiplier - 1).
   const extraCharges = multipliersArr.reduce((acc, m) => acc + (m - 1) * einsatz, 0) + Math.max(0, multipliersArr.length - 1) * einsatz
         if (extraCharges > 0) await economyManager.removeCoins(id, extraCharges)
 
-        // compute payouts
         let totalStake = 0
         let totalPayout = 0
         for (let i = 0; i < multipliersArr.length; i++) {
@@ -127,30 +119,22 @@ module.exports = {
           totalStake += stake
           const out = outcomes[i] || 'LOSE'
           if (out === 'WIN') {
-            // check for natural blackjack payout (3:2)
             const isNatural = (res.naturals && res.naturals[i])
             const dealerNatural = res.dealerNatural
             if (isNatural && !dealerNatural) {
-              // player gets 3:2 on top of their stake
-              // return stake + 1.5 * stake as profit => stake * 2.5 total
               totalPayout += Math.floor(stake * 2.5)
             } else {
-              // standard win: return stake + equal profit => stake*2
               totalPayout += stake * 2
             }
           } else if (out === 'PUSH') {
-            // return stake
             totalPayout += stake
           } else {
-            // LOSE => nothing
           }
         }
 
-        // apply payouts in a single operation for efficiency
         if (totalPayout > 0) await economyManager.addCoins(id, totalPayout)
         if (totalPayout > 0) await economyManager.addDailyAmount(id, Math.max(0, totalPayout - totalStake))
-
-        // Build reply summary
+/s
         const net = totalPayout - totalStake
         const title = net > 0 ? (await t('minigames.result_win')) : (net < 0 ? (await t('minigames.result_loss')) : (await t('minigames.result_cancel')))
 
