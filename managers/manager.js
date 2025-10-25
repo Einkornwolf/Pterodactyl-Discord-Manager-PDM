@@ -147,22 +147,22 @@ class ManagerClient extends Client {
 
   //Reload Buttons
   async reloadButtons() {
-    this.loadButtons()
+    await this.loadButtons()
   }
 
   //Reload SelectMenus
   async reloadSelectMenus() {
-    this.loadSelectMenus()
+    await this.loadSelectMenus()
   }
 
   //Reload Modals
   async reloadModals() {
-    this.loadModals()
+    await this.loadModals()
   }
 
   //Reload Analog Commands
   async reloadAnalogCommands() {
-    this.loadAnalogCommands()
+    await this.loadAnalogCommands()
   }
 
   //Load CronJobs

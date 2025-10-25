@@ -8,7 +8,7 @@ const { Password } = require("./passwordGenerator");
 const { DataBaseInterface } = require("./dataBaseInterface");
 const axiosInstance = require("axios");
 const database = new DataBaseInterface();
-serverDeletionOffset = process.env.DELETION_OFFSET;
+const serverDeletionOffset = process.env.DELETION_OFFSET;
 class PanelManager {
   /**
    * Handles the communication between the Panel and the Bot

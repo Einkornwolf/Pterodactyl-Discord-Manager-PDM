@@ -67,7 +67,7 @@ module.exports = {
     const itemDatabases = new TextInputBuilder()
       .setCustomId("serverDatabases")
       .setLabel(`${await t("add_item_modal_confirm.data_modal_db_text")}`)
-      .setPlaceholder(`${await t("add_item_modal_confirm.data_modal_disk_ph_text")}`)
+      .setPlaceholder(`${await t("add_item_modal_confirm.data_modal_db_ph_text")}`)
       .setStyle(TextInputStyle.Short);
 
     addServerModal.addComponents([

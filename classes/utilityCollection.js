@@ -34,7 +34,7 @@ class UtilityCollection {
         //Round up Number
         this.roundUp = async function (number, precision) {
             this.roundPrecision = Math.pow(10, precision)
-            return Math.ceil(number * precision) / precision
+            return Math.ceil(number * this.roundPrecision) / this.roundPrecision
         }
 
         //Load Javascript Files and delete their require Cache
