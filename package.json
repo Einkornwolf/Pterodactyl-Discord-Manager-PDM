@@ -2,7 +2,7 @@
   "dependencies": {
     "@napi-rs/canvas": "^0.1.80",
     "ascii-table": "^0.0.9",
-    "axios": "^1.12.2",
+    "axios": "^1.13.5",
     "better-sqlite3": "^12.4.1",
     "cron": "^4.3.3",
     "discord-oauth2": "^2.12.1",
