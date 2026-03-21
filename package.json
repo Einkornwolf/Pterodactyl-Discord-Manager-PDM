@@ -19,6 +19,10 @@
   "scripts": {
     "test": "jest",
     "testc": "jest --coverage",
-    "start": "node bot.js"
+    "start": "node bot.js",
+    "postinstall": "npm rebuild better-sqlite3"
+  },
+  "engines": {
+    "node": ">=20.0.0"
   }
 }

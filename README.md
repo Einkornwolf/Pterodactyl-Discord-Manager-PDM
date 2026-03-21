@@ -37,6 +37,14 @@ git clone https://github.com/Einkornwolf/Pterodactyl-Discord-Manager.git
 
 This bot uses the Trivia API <https://the-trivia-api.com/> to acquire trivia questions for a minigame. This API is licensed for non-commercial use only and needs to either be licensed or the feature removed if this Software is to be used commercially at any point. This is the main reason this Repository is licensed under a non-commercial License
 
+## Requirements
+
+- **Node.js v20 or newer** is required (LTS releases are recommended).  
+  `better-sqlite3` is a native addon and must be compiled for your exact Node.js version.  
+  Running `npm install` automatically rebuilds it for the active Node.js version via the `postinstall` script.
+
+---
+
 ## Installation
 
 1. **Create a configuration file** named `config.env`.
@@ -91,6 +99,35 @@ DEFAULT_LANGUAGE="en-US"
    "emoji_play": { "id": "<a:emojiName:12345677>", "emoji": "▶️"},
    ```
    
+---
+
+## Troubleshooting
+
+### `ERR_DLOPEN_FAILED` / `NODE_MODULE_VERSION` mismatch
+
+If you see an error like this on startup:
+
+```
+Error: The module '.../better-sqlite3/build/Release/better_sqlite3.node'
+was compiled against a different Node.js version using NODE_MODULE_VERSION X.
+This version of Node.js requires NODE_MODULE_VERSION Y.
+```
+
+This means `better-sqlite3` (a native C++ addon) was compiled for a different version of Node.js than the one you are running.  
+**Fix:** run the following command inside the bot directory and then start the bot again:
+
+```bash
+npm rebuild better-sqlite3
+```
+
+If `npm rebuild` fails because build tools are not available, make sure `python3`, `make`, and a C++ compiler (`gcc`/`g++`) are installed in your environment.  
+On Pterodactyl panels this error usually occurs after a Node.js upgrade — simply delete the `node_modules` folder and run `npm install` again:
+
+```bash
+rm -rf node_modules
+npm install
+```
+
 ---
 
 ## Notes
