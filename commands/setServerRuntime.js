@@ -3,6 +3,8 @@
  * All rights reserved.
  */
 
+const { onAsync } = require("../classes/collectorEvents");
+const { isAdmin } = require("../classes/adminAuthorization");
 const { PanelManager } = require("../classes/panelManager")
 const { TranslationManager } = require("./../classes/translationManager")
 const { BoosterManager } = require("./../classes/boosterManager")
@@ -52,7 +54,7 @@ module.exports = {
         let uuid = interaction.options.getString("uuid"), runtime = interaction.options.getInteger("runtime"), price = interaction.options.getNumber("price")
 
         //Check if User is an Admin
-        if (!process.env.ADMIN_LIST.includes(userId)) {
+        if (!isAdmin(userId)) {
             await interaction.editReply({
                 embeds: [
                     new EmbedBuilder()
@@ -96,11 +98,11 @@ module.exports = {
 
         //Server already has a Runtime applied to it. Ask User if he wants to override
         if (runtimeData.status == true) {
-            await interaction.editReply({
+            const runtimeMessage = await interaction.editReply({
                 embeds: [
                     new EmbedBuilder()
                         .setTitle(`${await emojiManager.getEmoji("emoji_warning")} ${await t("override_runtime.has_runtime_label")} ${await emojiManager.getEmoji("emoji_warning")}`)
-                        .setDescription(`${await emojiManager.getEmoji("emoji_arrow_down_right")} **${await t("override_runtimehas_runtime_text")}**`)
+                        .setDescription(`${await emojiManager.getEmoji("emoji_arrow_down_right")} **${await t("override_runtime.has_runtime_text")}**`)
                         .setColor(accentColor ? accentColor : 0xe6b04d)
                         .setFooter({ text: process.env.FOOTER_TEXT, iconURL: serverIconURL })
                         .setTimestamp()
@@ -120,12 +122,12 @@ module.exports = {
             })
 
             const answerFilter = i => {
-                return i.user.id === userId
+                return i.user.id === userId && ["overrideTrue", "overrideFalse"].includes(i.customId)
             }
 
-            const answerCollector = interaction.channel.createMessageComponentCollector({ componentType: ComponentType.Button, time: 30000, max: 1, filter: answerFilter });
+            const answerCollector = runtimeMessage.createMessageComponentCollector({ componentType: ComponentType.Button, time: 30000, max: 1, filter: answerFilter });
 
-            answerCollector.on('collect', async answerButton => {
+            onAsync(answerCollector, 'collect', async answerButton => {
                 await interaction.editReply({
                     components: [new ActionRowBuilder().addComponents([
                         new ButtonBuilder()
@@ -142,11 +144,11 @@ module.exports = {
                     ])]
                 })
                 if (answerButton.customId == "overrideFalse") {
-                    await cancelButton.execute(answerButton, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t)
+                    await cancelButton.execute(answerButton, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t, giftCodeManager, emojiManager)
                     return
                 }
 
-                await continueButton.execute(answerButton, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t, uuid, serverIdentifier, runtime, price)
+                await continueButton.execute(answerButton, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t, giftCodeManager, emojiManager, uuid, serverIdentifier, runtime, price)
             })
 
             return
