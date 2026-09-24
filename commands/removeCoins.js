@@ -3,6 +3,7 @@
  * All rights reserved.
  */
 
+const { isAdmin } = require("../classes/adminAuthorization");
 const { PanelManager } = require("../classes/panelManager")
 const { TranslationManager } = require("./../classes/translationManager")
 const { BoosterManager } = require("./../classes/boosterManager")
@@ -46,7 +47,7 @@ module.exports = {
     //Get User to add Coins to
     let user = interaction.options.getUser("user"), amount = interaction.options.getNumber("amount"), receiverData = await databaseInterface.getObject(user.id)
     //Check if User is on the Admin List
-    switch (process.env.ADMIN_LIST.includes(userId)) {
+    switch (isAdmin(userId)) {
       case false: {
         await interaction.editReply({
           embeds: [

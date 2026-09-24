@@ -3,9 +3,11 @@
  * All rights reserved.
  */
 
+const { isAdmin } = require("../../classes/adminAuthorization");
 const { UtilityCollection } = require("../../classes/utilityCollection")
 const { Client } = require("discord.js")
 const utility = new UtilityCollection()
+const { clearJsonCache } = require("../../classes/jsonCache");
 
 module.exports = {
   customId: "reload",
@@ -16,15 +18,11 @@ module.exports = {
    * @param {Client} client
    */
   async execute(message, client) {
-    switch (process.env.ADMIN_LIST && process.env.ADMIN_LIST.includes(message.author.id)) {
-      case false:
-        return;
-      case true:
-        break;
-    }
+    if (!isAdmin(message.author.id)) return;
 
     let { content } = message, subCommand = content.split("? ")[1], timeBefore = performance.now()
 
+    clearJsonCache();
     //Reload
     switch (subCommand) {
       case "events":

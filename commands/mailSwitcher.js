@@ -3,6 +3,7 @@
  * All rights reserved.
  */
 
+const { isAdmin } = require("../classes/adminAuthorization");
 const { PanelManager } = require("../classes/panelManager")
 const { TranslationManager } = require("./../classes/translationManager")
 const { BoosterManager } = require("./../classes/boosterManager")
@@ -44,7 +45,7 @@ module.exports = {
     const serverIconURL = guild ? guild.iconURL({ dynamic: true }) : undefined
     
     //Check if User is on the Admin List
-    if (!process.env.ADMIN_LIST.includes(userId)) {
+    if (!isAdmin(userId)) {
       await interaction.editReply({
         embeds: [
             new EmbedBuilder()
