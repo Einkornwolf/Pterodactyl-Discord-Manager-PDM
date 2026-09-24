@@ -74,16 +74,15 @@ module.exports = {
           .setFooter({ text: process.env.FOOTER_TEXT, iconURL: serverIconURL })
           .setTimestamp()
       ],
-      ephemeral: true
     });
 
 
     //Get Server Information
     //Get Live Resource Usage and destructure
     let serverLiveUsage = await panel.liveServerRessourceUsage(identifier)
-    let { attributes: { resources: { uptime, memory_bytes, cpu_absolute }, suspended } } = serverLiveUsage
+    const { resources: { uptime = 0, memory_bytes = 0, cpu_absolute = 0 } = {}, suspended } = serverLiveUsage?.attributes ?? {}
     let liveRam = !serverLiveUsage ? "N/A" : Math.ceil(memory_bytes * 0.00000095367432), liveCpu = !serverLiveUsage ? "N/A" : Math.ceil(cpu_absolute)
-    let serverUptime = !serverLiveUsage ? "N/A" : Math.ceil(uptime / 60 / 60), serverSuspended = suspended ? await t("server_manager_events.server_suspended_text") : await t("server_manager_events.server_suspended_text_no")
+    let serverUptime = !serverLiveUsage ? "N/A" : Math.floor(uptime / 60000), serverSuspended = suspended ? await t("server_manager_events.server_suspended_text") : await t("server_manager_events.server_suspended_text_no")
 
     //Save Information
     let serverEmbed = new EmbedBuilder()
