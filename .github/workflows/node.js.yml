@@ -16,7 +16,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [24.x]
+        node-version: [24.x, 26.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
@@ -26,5 +26,7 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-    - run: npm ci
-    - run: npm test
+    - run: npm ci --ignore-scripts
+    - run: npm test -- --runInBand
+    - name: Check native canvas binding
+      run: node -e "require('@napi-rs/canvas').createCanvas(8,8).toBuffer('image/png')"

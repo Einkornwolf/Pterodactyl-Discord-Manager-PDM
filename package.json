@@ -1,15 +1,12 @@
 {
   "dependencies": {
-    "@napi-rs/canvas": "^0.1.80",
+    "@napi-rs/canvas": "^0.1.100",
     "ascii-table": "^0.0.9",
-    "axios": "^1.18.0",
-    "better-sqlite3": "^12.4.1",
-    "cron": "^4.3.3",
-    "discord-oauth2": "^2.12.1",
+    "axios": "^1.20.0",
+    "better-sqlite3": "^13.0.3",
+    "cron": "^4.4.0",
     "discord.js": "^14.27.0",
-    "dotenv": "^17.2.3",
-    "emoji-regex": "^10.2.1",
-    "express": "^5.2.0",
+    "dotenv": "^17.4.2",
     "glob": "^11.1.0",
     "quick.db": "^9.1.7"
   },
@@ -20,5 +17,8 @@
     "test": "jest",
     "testc": "jest --coverage",
     "start": "node bot.js"
+  },
+  "engines": {
+    "node": "^24.17.0 || ^26.0.0"
   }
 }
