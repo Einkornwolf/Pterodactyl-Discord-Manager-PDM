@@ -3,6 +3,7 @@
  * All rights reserved.
  */
 
+const { isAdmin } = require("../../classes/adminAuthorization");
 const { Client } = require("discord.js");
 
 module.exports = {
@@ -14,12 +15,7 @@ module.exports = {
    * @param {Client} client
    */
   async execute(message, client) {
-    switch (process.env.ADMIN_LIST && process.env.ADMIN_LIST.includes(message.author.id)) {
-      case false:
-        return;
-      case true:
-        break;
-    }
+    if (!isAdmin(message.author.id)) return;
     let { content } = message, banData = content.slice(10)
     // Get User by Discord ID
     // Check for mention
