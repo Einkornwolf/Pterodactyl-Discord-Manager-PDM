@@ -3,6 +3,7 @@
  * All rights reserved.
  */
 
+const { onAsync } = require("../../classes/collectorEvents");
 const { TranslationManager } = require("../../classes/translationManager")
 const { PanelManager } = require("../../classes/panelManager")
 const { BoosterManager } = require("../../classes/boosterManager")
@@ -74,7 +75,7 @@ module.exports = {
       max: 1,
     });
 
-    blackjackCollector.on("collect", async (collected) => {
+    onAsync(blackjackCollector, "collect", async (collected) => {
       let { content: einsatz } = collected
       einsatz = parseInt(einsatz)
       //Try to delete message
