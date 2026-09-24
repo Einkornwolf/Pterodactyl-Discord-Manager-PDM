@@ -3,47 +3,34 @@
  * All rights reserved.
  */
 
-const { DataBaseInterface } = require("./dataBaseInterface")
-const database = new DataBaseInterface()
-const fs = require("fs");
-const defaultLanguageShort = process.env.DEFAULT_LANGUAGE
-
+const { DataBaseInterface } = require('./dataBaseInterface');
+const { readJson } = require('./jsonCache');
+const database = new DataBaseInterface();
+const languages = new Set(['en-US', 'de-DE', 'es-ES', 'fr-FR', 'nl-NL', 'pl-PL']);
 class TranslationManager {
-    /**
-     * Handles the Translation Files
-     * 
-     * @param { String } userId 
-     */
     constructor(userId) {
-
-        //Delete Language of User
-        this.deleteUserLanguage = async function () {
-            return await database.deleteObject(`${userId}.language`)
-        }
-
-        //Save Language of User
-        this.saveUserLanguage = async function (languageShort) {
-            await this.deleteUserLanguage()
-            return await database.setUserValue(userId, ".language", languageShort)
-        }
-
-        //Get Users Language
-        this.getUserLanguage = async function() {
-            this.userLanguageData = await database.getObject(`${userId}`)
-            switch(this.userLanguageData == null || this.userLanguageData.language == undefined) {
-                case false: return this.userLanguageData.language
-                case true: return defaultLanguageShort
-            }
-        }
-
-        //Get Translation for Translation Key 
-        this.getTranslation = async function (key) {
-            this.userLanguage = await this.getUserLanguage()
-            return JSON.parse(await fs.promises.readFile(`translations/${this.userLanguage}.json`))[key]
-        }
+        let language;
+        const fallback = () => languages.has(process.env.DEFAULT_LANGUAGE) ? process.env.DEFAULT_LANGUAGE : 'en-US';
+        this.deleteUserLanguage = async () => {
+            await database.deleteObject(`${userId}.language`);
+            language = undefined;
+        };
+        this.saveUserLanguage = async code => {
+            if (!languages.has(code)) throw new Error('Unsupported language');
+            await database.setUserValue(userId, '.language', code);
+            language = Promise.resolve(code);
+        };
+        this.getUserLanguage = () => {
+            if (!language) language = database.getObject(userId)
+                .then(user => languages.has(user?.language) ? user.language : fallback())
+                .catch(error => { language = undefined; throw error; });
+            return language;
+        };
+        this.getTranslation = async key => {
+            const code = await this.getUserLanguage();
+            const dictionary = await readJson(`${code}.json`);
+            return dictionary[key] ?? (await readJson('en-US.json'))[key] ?? key;
+        };
     }
 }
-
-module.exports = {
-    TranslationManager
-}
+module.exports = { TranslationManager };

@@ -3,7 +3,7 @@
  * All rights reserved.
  */
 
-const fs = require("fs");
+const { readJson } = require("./jsonCache");
 
 class EmojiManager {
     /**
@@ -14,8 +14,7 @@ class EmojiManager {
 
     constructor() {
         this.getEmoji = async function (key) {
-            const txt = await fs.promises.readFile(`translations/emojis.json`);
-            const json = JSON.parse(txt);
+            const json = await readJson('emojis.json');
             const entry = json[key];
             if (!entry) return null;
             if (entry.id && String(entry.id).trim().length) return entry.id;
