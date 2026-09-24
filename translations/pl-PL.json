@@ -4,7 +4,7 @@
 	"errors.cancel_label": "Anulowano!",
 	"override_runtime.override_text": "Czas działania serwera został ustawiony!",
 	"override_runtime.override_label": "Sukces!",
-	"override_runtimehas_runtime_text": "Serwer ma już przypisany czas działania. Czy chcesz go nadpisać?",
+	"override_runtime.has_runtime_text": "Serwer ma już przypisany czas działania. Czy chcesz go nadpisać?",
 	"override_runtime.has_runtime_label": "Ostrzeżenie!",
 	"override_runtime.error": "Serwer należy do użytkownika panelu, który nie ma konta bota. Nie można ustawić czasu działania.",
 	"giftcode_manager.code_not_found": "Kod do usunięcia nie został znaleziony. Czy został już usunięty?",
@@ -319,5 +319,7 @@
 	"counting.mode_descriptions.binary": "Liczy się w systemie binarnym: 1, 10, 11, 100 …",
 	"counting.mode_descriptions.hexadecimal": "Liczy się w systemie heksadecymalnym: 1, 2, …, A, B, C …",
 	"shop_select.no_shop_items": "Sklep jest pusty",
-	"shop_select.invalid_selection": "Nieprawidłowy wybór sklepu"
+	"shop_select.invalid_selection": "Nieprawidłowy wybór sklepu",
+  "transfer_coins.same_user_text": "Nie możesz przekazywać monet samemu sobie.",
+  "transfer_coins.invalid_balance_text": "Saldo odbiorcy jest nieprawidłowe."
 }

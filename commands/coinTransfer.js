@@ -21,7 +21,7 @@ module.exports = {
       option.setName("user").setDescription("Receiver").setRequired(true)
     )
     .addIntegerOption((option) =>
-      option.setName("amount").setDescription("Amount").setRequired(true)
+      option.setName("amount").setDescription("Amount").setMinValue(1).setRequired(true)
     )
     .addStringOption((option) =>
       option.setName("message").setDescription("Message").setRequired(false)
@@ -88,7 +88,7 @@ module.exports = {
     let flooredAmount = Math.floor(transferAmount)
 
     //Check if transfer amount is Valid
-    if (!Number.isFinite(transferAmount) || !Number.isFinite(flooredAmount) || flooredAmount <= 0) {
+    if (!Number.isSafeInteger(transferAmount) || !Number.isSafeInteger(flooredAmount) || flooredAmount <= 0) {
       await interaction.editReply({
         embeds: [
           new EmbedBuilder()
@@ -105,13 +105,22 @@ module.exports = {
       return;
     }
 
-    //Check if User has enough Coins
-    if (userData.balance < flooredAmount || userData.balance == undefined) {
+    // Recheck balances and commit both writes in one database transaction.
+    const transfer = await economyManager.transferCoins(userId, recipient.id, flooredAmount);
+    if (!transfer.ok) {
+      const reasonKey = {
+        sender_missing: "transfer_coins.no_account_text",
+        recipient_missing: "transfer_coins.no_account_receiver_text",
+        same_user: "transfer_coins.same_user_text",
+        invalid_amount: "transfer_coins.lower_than_zero_text",
+        invalid_balance: "transfer_coins.invalid_balance_text",
+        insufficient_funds: "transfer_coins.not_enough_coins_text"
+      }[transfer.reason];
       await interaction.editReply({
         embeds: [
           new EmbedBuilder()
-            .setTitle(`${await emojiManager.getEmoji("emoji_error")} ${await t("transfer_coins.not_enough_coins_label")} ${await emojiManager.getEmoji("emoji_error")}`)
-            .setDescription(`${await emojiManager.getEmoji("emoji_arrow_down_right")} **${await t("transfer_coins.not_enough_coins_text")}**`)
+            .setTitle(`${await emojiManager.getEmoji("emoji_error")} ${await t("errors.error_label")} ${await emojiManager.getEmoji("emoji_error")}`)
+            .setDescription(`${await emojiManager.getEmoji("emoji_arrow_down_right")} **${await t(reasonKey)}**`)
             .setColor(accentColor ? accentColor : 0xe6b04d)
             .setFooter({ text: process.env.FOOTER_TEXT, iconURL: serverIconURL })
             .setTimestamp()
@@ -119,13 +128,10 @@ module.exports = {
         flags: MessageFlags.Ephemeral,
       });
       //Logging
-      await logManager.logString(`${tag} tried to transfer ${flooredAmount} Coins to ${recipient.tag}, but did not have enough Coins: ${await economyManager.getUserBalance(userId)}`)
+      await logManager.logString(`${tag} tried to transfer ${flooredAmount} Coins to ${recipient.tag}, but the transfer was rejected: ${transfer.reason}`)
       return;
     }
 
-    //Remove Coins from User and add to Recipient
-    await economyManager.removeCoins(userId, flooredAmount), await economyManager.addCoins(recipient.id, flooredAmount)
-    // let user = interaction.client.users.cache.get(empfaenger.id);
     //Logging
     await logManager.logString(`${tag} transfered ${flooredAmount} Coin|s to ${recipient.tag}`)
 
