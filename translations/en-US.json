@@ -5,7 +5,7 @@
 	"errors.cancel_label": "Cancelled!",
 	"override_runtime.override_text": "The runtime of the server has been set!",
 	"override_runtime.override_label": "Success!",
-	"override_runtimehas_runtime_text": "The server already has an assigned runtime. Should this be overridden?",
+	"override_runtime.has_runtime_text": "The server already has an assigned runtime. Should this be overridden?",
 	"override_runtime.has_runtime_label": "Warning!",
 	"override_runtime.error": "The server belongs to a Panel user who does not have a bot account. Runtime cannot be set.",
 	"giftcode_manager.code_not_found": "The code to be deleted was not found. Has it already been deleted?",
@@ -320,5 +320,7 @@
 	"account_manager.link_text": "Link an existing account",
 	"account_manager_modal.api_label": "API key of the account",
 	"account_manager_events.account_link_fail_text": "Linking failed! This panel account may already be linked to another Discord user, or the API key is invalid",
-	"account_manager.link_success": "Account linked successfully"
+	"account_manager.link_success": "Account linked successfully",
+  "transfer_coins.same_user_text": "You cannot transfer coins to yourself.",
+  "transfer_coins.invalid_balance_text": "The recipient balance is invalid."
 }

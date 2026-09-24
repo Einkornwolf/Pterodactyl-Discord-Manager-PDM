@@ -4,7 +4,7 @@
 	"errors.cancel_label": "Geannuleerd!",
 	"override_runtime.override_text": "De looptijd van de server is ingesteld!",
 	"override_runtime.override_label": "Succes!",
-	"override_runtimehas_runtime_text": "De server heeft al een toegewezen looptijd. Wil je deze overschrijven?",
+	"override_runtime.has_runtime_text": "De server heeft al een toegewezen looptijd. Wil je deze overschrijven?",
 	"override_runtime.has_runtime_label": "Waarschuwing!",
 	"override_runtime.error": "De server behoort toe aan een panelgebruiker die geen bot-account heeft. Looptijd kan niet worden ingesteld.",
 	"giftcode_manager.code_not_found": "De te verwijderen code is niet gevonden. Is deze al verwijderd?",
@@ -319,5 +319,7 @@
 	"counting.mode_descriptions.binary": "Er wordt in binair geteld: 1, 10, 11, 100 …",
 	"counting.mode_descriptions.hexadecimal": "Er wordt in hexadecimaal geteld: 1, 2, …, A, B, C …",
 	"shop_select.no_shop_items": "De shop is leeg",
-	"shop_select.invalid_selection": "Ongeldige shop-selectie"
+	"shop_select.invalid_selection": "Ongeldige shop-selectie",
+  "transfer_coins.same_user_text": "Je kunt geen munten naar jezelf overmaken.",
+  "transfer_coins.invalid_balance_text": "Het saldo van de ontvanger is ongeldig."
 }

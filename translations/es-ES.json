@@ -4,7 +4,7 @@
 	"errors.cancel_label": "¡Cancelado!",
 	"override_runtime.override_text": "¡El tiempo de ejecución del servidor ha sido establecido!",
 	"override_runtime.override_label": "¡Éxito!",
-	"override_runtimehas_runtime_text": "El servidor ya tiene un tiempo de ejecución asignado. ¿Deseas sobrescribirlo?",
+	"override_runtime.has_runtime_text": "El servidor ya tiene un tiempo de ejecución asignado. ¿Deseas sobrescribirlo?",
 	"override_runtime.has_runtime_label": "¡Advertencia!",
 	"override_runtime.error": "El servidor pertenece a un usuario del panel que no tiene cuenta de bot. No se puede establecer el tiempo de ejecución.",
 	"giftcode_manager.code_not_found": "El código a eliminar no fue encontrado. ¿Ya fue eliminado?",
@@ -319,5 +319,7 @@
 	"counting.mode_descriptions.binary": "Se cuenta en binario: 1, 10, 11, 100 …",
 	"counting.mode_descriptions.hexadecimal": "Se cuenta en hexadecimal: 1, 2, …, A, B, C …",
 	"shop_select.no_shop_items": "La tienda está vacía",
-	"shop_select.invalid_selection": "Selección de tienda inválida"
+	"shop_select.invalid_selection": "Selección de tienda inválida",
+  "transfer_coins.same_user_text": "No puedes transferirte monedas a ti mismo.",
+  "transfer_coins.invalid_balance_text": "El saldo del destinatario no es válido."
 }
