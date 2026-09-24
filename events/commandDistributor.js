@@ -23,64 +23,52 @@ const giftCodeManager = new GiftCodeManager()
 const emojiManager = new EmojiManager();
 const panel = new PanelManager(process.env.PTERODACTYL_API_URL, process.env.PTERODACTYL_API_KEY, process.env.PTERODACTYL_ACCOUNT_API_KEY)
 
-module.exports = {
-    name: "interactionCreate",
-    once: false,
+const { MessageFlags } = require('discord.js');
+const collectorButtons = new Set([
+    'discord-blackjack-hitbtn', 'discord-blackjack-splitbtn', 'discord-blackjack-standbtn',
+    'discord-blackjack-ddownbtn', 'discord-blackjack-cancelbtn',
+    'pdm-bj-hit', 'pdm-bj-split', 'pdm-bj-stand', 'pdm-bj-double', 'pdm-bj-cancel',
+    'A', 'B', 'C', 'D', 'overrideFalse', 'overrideTrue'
+]);
 
-    /**
-     * 
-     * @param {BaseInteraction} interaction 
-     * @param {Client} client
-     */
+module.exports = {
+    name: 'interactionCreate',
+    once: false,
     async execute(interaction, client) {
         if (!interaction.inGuild()) return;
-        let translationManager = new TranslationManager(interaction.user.id)
-        const t = async function (key) {
-            return await translationManager.getTranslation(key)
-        }
-
-        // Interaction is Command
-        if (interaction.isCommand()) {
-            let command = client.commands.get(interaction.commandName);
-            try {
-                await command.execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, database, t, giftCodeManager, emojiManager);
-            } catch (error) {
-                console.error(`Command "${command.customId}" failed: ${error}`)
-            }
-
-            // Interaction is Button
+        let handler;
+        const id = interaction.commandName || interaction.customId;
+        if (interaction.isChatInputCommand()) {
+            handler = client.commands.get(id);
         } else if (interaction.isButton()) {
-            //Exclude Blackjack Buttons 
-            if (["discord-blackjack-hitbtn", "discord-blackjack-splitbtn", "discord-blackjack-standbtn", "discord-blackjack-ddownbtn", "discord-blackjack-cancelbtn", "pdm-bj-hit", "pdm-bj-split", "pdm-bj-stand", "pdm-bj-double", "pdm-bj-cancel"].includes(interaction.customId)) return;
-            //Exlude Trivia Buttons
-            if (["A", "B", "C", "D"].includes(interaction.customId)) return;
-            //Exclude Runtime Override Buttons
-            if(["overrideFalse", "overrideTrue"].includes(interaction.customId)) return;
-
-            let button = client.buttons.get(interaction.customId);
-            try {
-                await button.execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, database, t, giftCodeManager, emojiManager);
-            } catch (error) {
-                console.error(`Button "${button.customId}" failed: ${error}`);
-            }
-        // Interaction is Select Menu
+            if (collectorButtons.has(id)) return;
+            handler = client.buttons.get(id);
         } else if (interaction.isStringSelectMenu()) {
-            //Exclude GiftCode Select Menu
-            if (["singleUseCodeSelect"].includes(interaction.customId)) return;
-            let selectMenu = client.selectMenus.get(interaction.customId);
-            try {
-                await selectMenu.execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, database, t, giftCodeManager, emojiManager);
-            } catch (error) {
-                console.log(`Select Menu "${selectMenu.customId}" failed: ${error}`);
-            }
-            // Interaction is Modal
+            if (id === 'singleUseCodeSelect') return;
+            handler = client.selectMenus.get(id);
         } else if (interaction.isModalSubmit()) {
-            let modal = client.modals.get(interaction.customId);
+            handler = client.modals.get(id);
+        } else return;
+
+        try {
+            if (!handler || typeof handler.execute !== 'function') {
+                await interaction.reply({ content: 'This action is no longer available. Please reopen the menu.', flags: MessageFlags.Ephemeral });
+                return;
+            }
+            const translationManager = new TranslationManager(interaction.user.id);
+            const t = key => translationManager.getTranslation(key);
+            await handler.execute(interaction, client, panel, boosterManager, cacheManager,
+                economyManager, logManager, database, t, giftCodeManager, emojiManager);
+        } catch (error) {
+            console.error(`Interaction "${id}" failed:`, error);
             try {
-            await modal.execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, database, t, giftCodeManager, emojiManager);
-            } catch(error) {
-                console.log(`Modal "${modal.customId}" failed: ${error}`)
+                const response = { content: 'Something went wrong. Please try again.' };
+                if (interaction.deferred) await interaction.editReply({ ...response, embeds: [], components: [] });
+                else if (interaction.replied) await interaction.followUp({ ...response, flags: MessageFlags.Ephemeral });
+                else await interaction.reply({ ...response, flags: MessageFlags.Ephemeral });
+            } catch (replyError) {
+                console.error(`Could not report failure for "${id}":`, replyError);
             }
         }
     }
-}
+};

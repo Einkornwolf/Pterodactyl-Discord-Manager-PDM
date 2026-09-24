@@ -3,6 +3,7 @@
  * All rights reserved.
  */
 
+const { onAsync } = require("../../classes/collectorEvents");
 const { TranslationManager } = require("../../classes/translationManager")
 const { PanelManager } = require("../../classes/panelManager")
 const { BoosterManager } = require("../../classes/boosterManager")
@@ -69,7 +70,7 @@ module.exports = {
       max: 1,
     });
 
-    zahlenCollector.on("collect", async (collected) => {
+    onAsync(zahlenCollector, "collect", async (collected) => {
       let { content: einsatz } = collected
       einsatz = parseInt(einsatz)
       try {
@@ -118,7 +119,7 @@ module.exports = {
         time: 15000,
         max: 1,
       });
-      collector.on("collect", async (collected) => {
+      onAsync(collector, "collect", async (collected) => {
         let { content: guess } = collected
         try {
           await collected.delete();
