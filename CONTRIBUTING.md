@@ -67,7 +67,7 @@ A local development environment requires **Node.js 24.17+ or 26.x**, as specifie
     node bot.js
     ```
 
-For changes to code, run `npm run test:ci` before opening a PR. Tests use isolated fixtures and do not require `config.env`, a Discord login, or a live panel. See [TESTING.md](./TESTING.md) for coverage, test boundaries, and CI details.
+For changes to code, run `npm run test:ci` before opening a PR.  See [TESTING.md](./TESTING.md)
 
 ## Contributor License Agreement
 All contributions to this project are subject to its **Custom Non-Commercial Copyleft License (CNCCL)**. By submitting a Pull Request, you agree that your work will be licensed under these terms. All existing copyright and license notices must be preserved in all files.
