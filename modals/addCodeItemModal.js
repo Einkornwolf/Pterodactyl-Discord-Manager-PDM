@@ -3,6 +3,7 @@
  * All rights reserved.
  */
 
+const { onAsync } = require("../classes/collectorEvents");
 const { PanelManager } = require("./../classes/panelManager")
 const { TranslationManager } = require("./../classes/translationManager")
 const { BoosterManager } = require("./../classes/boosterManager")
@@ -42,7 +43,7 @@ module.exports = {
         const denyEmoji = emojiManager.parseEmoji(await emojiManager.getEmoji("emoji_deny")) || "❌";
 
         //Check if Code should be Single use
-        await interaction.editReply({
+        const codeMessage = await interaction.editReply({
             embeds: [
                 new EmbedBuilder()
                     .setTitle(`${await emojiManager.getEmoji("emoji_glass")} ${await t("giftcode_manager.single_use_label")}`)
@@ -76,10 +77,10 @@ module.exports = {
 
         let filter = i => {
             let { user: { id: userId } } = i
-            return userId === id
+            return userId === id && i.customId === "singleUseCodeSelect"
         }
 
-        let collector = interaction.channel.createMessageComponentCollector({ componentType: ComponentType.StringSelect, time: 15000, max: 1, filter });
+        let collector = codeMessage.createMessageComponentCollector({ componentType: ComponentType.StringSelect, time: 15000, max: 1, filter });
 
         let codeCreatedEmbed = new EmbedBuilder()
             .setTitle(`${await emojiManager.getEmoji("emoji_logo")} ${await t("giftcode_manager.created_label")}`)
@@ -88,7 +89,7 @@ module.exports = {
             .setFooter({ text: process.env.FOOTER_TEXT, iconURL: serverIconURL })
             .setTimestamp()
 
-        collector.on("collect", async i => {
+        onAsync(collector, "collect", async i => {
             let singleUser = i.values[0]
             //Add Code
             await giftCodeManager.createGiftCode(itemCode, itemValue, singleUser)

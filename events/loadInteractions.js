@@ -15,7 +15,7 @@ const emojiManager = new EmojiManager();
 
 module.exports = {
   name: "clientReady",
-  once: false,
+  once: true,
   /**
    *
    * @param {Discord.Client} client

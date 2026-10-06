@@ -5,7 +5,6 @@
 
 const { isAdmin } = require("../classes/adminAuthorization");
 const Canvas = require("@napi-rs/canvas");
-const { request } = require("undici");
 const { PanelManager } = require("../classes/panelManager")
 const { TranslationManager } = require("./../classes/translationManager")
 const { BoosterManager } = require("./../classes/boosterManager")
@@ -105,7 +104,9 @@ module.exports = {
               //Clip around next Object
               context.beginPath(), context.arc(75, 75, 50, 0, Math.PI * 2, true), context.closePath(), context.clip()
               //Add User Avatar
-              let { body } = await request(foreignUser.displayAvatarURL({ extension: "jpg" })), avatar = await Canvas.loadImage(await body.arrayBuffer())
+              const response = await fetch(foreignUser.displayAvatarURL({ extension: "jpg" }), { signal: AbortSignal.timeout(15000) });
+              if (!response.ok) throw new Error(`Avatar request failed: ${response.status}`);
+              const avatar = await Canvas.loadImage(Buffer.from(await response.arrayBuffer()));
               context.drawImage(avatar, 25, 25, 100, 100), context.stroke()
               let attachment = new AttachmentBuilder(canvas.toBuffer("image/png"), { name: "canvas.png" })
 
@@ -163,7 +164,9 @@ module.exports = {
     //Clip around next Object
     context.beginPath(), context.arc(75, 75, 50, 0, Math.PI * 2, true), context.closePath(), context.clip()
     //Add User Avatar
-    let { body } = await request(interaction.user.displayAvatarURL({ extension: "jpg" })), avatar = await Canvas.loadImage(await body.arrayBuffer())
+    const response = await fetch(interaction.user.displayAvatarURL({ extension: "jpg" }), { signal: AbortSignal.timeout(15000) });
+    if (!response.ok) throw new Error(`Avatar request failed: ${response.status}`);
+    const avatar = await Canvas.loadImage(Buffer.from(await response.arrayBuffer()));
     context.drawImage(avatar, 25, 25, 100, 100), context.stroke()
     let attachment = new AttachmentBuilder(canvas.toBuffer("image/png"), { name: "canvas.png" })
 
@@ -181,4 +184,3 @@ module.exports = {
     await logManager.logString(`${tag} checked their balance: ${userData.balance ? userData.balance : 0} Coins`)
   }
 }
-

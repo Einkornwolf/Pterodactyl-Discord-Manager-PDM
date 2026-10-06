@@ -28,7 +28,7 @@ class ManagerClient extends Client {
       table.addRow(command.data.name, "🟩");
     });
 
-    this.application.commands.set(commandsArray);
+    await this.application.commands.set(commandsArray);
 
     return console.log(table.toString());
   }
@@ -46,16 +46,12 @@ class ManagerClient extends Client {
     Files.forEach((file) => {
       const event = require(file);
 
-      let execute = (...args) => event.execute(...args, this);
-      this.events.set(event.name, execute);
-
-      if (event.rest) {
-        if (event.once) client.rest.on(event.name, execute);
-        else this.rest.on(event.name, execute);
-      } else {
-        if (event.once) client.once(event.name, execute);
-        else this.on(event.name, execute);
-      }
+      const emitter = event.rest ? this.rest : this;
+      const execute = (...args) => Promise.resolve()
+        .then(() => event.execute(...args, this))
+        .catch(error => console.error(`Event "${event.name}" failed:`, error));
+      this.events.set(event.name, { emitter, execute });
+      emitter[event.once ? "once" : "on"](event.name, execute);
       event.name == ""
         ? table.addRow("Error", "🟥")
         : table.addRow(event.name, "🟩");
@@ -133,13 +129,13 @@ class ManagerClient extends Client {
 
   //Reload Commands
   async reloadCommands() {
-    this.loadCommands();
+    await this.loadCommands();
   }
 
   //Reload Events
   async reloadEvents() {
-    for (let [key, value] of this.events) {
-      this.removeListener(key, value);
+    for (const [key, { emitter, execute }] of this.events) {
+      emitter.removeListener(key, execute);
     }
 
     await this.loadEvents();

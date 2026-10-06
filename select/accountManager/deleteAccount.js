@@ -3,6 +3,7 @@
  * All rights reserved.
  */
 
+const { onAsync } = require("../../classes/collectorEvents");
 const { PanelManager } = require("../../classes/panelManager")
 const { TranslationManager } = require("./../../classes/translationManager")
 const { BoosterManager } = require("./../../classes/boosterManager")
@@ -71,7 +72,7 @@ module.exports = {
             max: 1,
         });
 
-        collector.on("collect", async (collected) => {
+        onAsync(collector, "collect", async (collected) => {
             let { content } = collected, { e_mail } = userData
             try {
                 await collected.delete();
