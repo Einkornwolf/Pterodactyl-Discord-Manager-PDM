@@ -3,6 +3,7 @@
  * All rights reserved.
  */
 
+const { isAdmin } = require("../classes/adminAuthorization");
 const Canvas = require("@napi-rs/canvas");
 const { request } = require("undici");
 const { PanelManager } = require("../classes/panelManager")
@@ -47,7 +48,7 @@ module.exports = {
     //Given user
     if (foreignUser) {
       let receiverData = await databaseInterface.getObject(foreignUser.id)
-      switch (process.env.ADMIN_LIST.includes(userId)) {
+      switch (isAdmin(userId)) {
         case false: {
           //Reply that the User is no Admin
           await interaction.editReply({
@@ -180,5 +181,4 @@ module.exports = {
     await logManager.logString(`${tag} checked their balance: ${userData.balance ? userData.balance : 0} Coins`)
   }
 }
-
 

@@ -3,6 +3,7 @@
  * All rights reserved.
  */
 
+const { isAdmin } = require("../classes/adminAuthorization");
 const { PanelManager } = require("../classes/panelManager")
 const { TranslationManager } = require("./../classes/translationManager")
 const { BoosterManager } = require("./../classes/boosterManager")
@@ -52,7 +53,7 @@ module.exports = {
         let uuid = interaction.options.getString("uuid"), runtime = interaction.options.getInteger("runtime"), price = interaction.options.getNumber("price")
 
         //Check if User is an Admin
-        if (!process.env.ADMIN_LIST.includes(userId)) {
+        if (!isAdmin(userId)) {
             await interaction.editReply({
                 embeds: [
                     new EmbedBuilder()
