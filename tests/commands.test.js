@@ -164,7 +164,7 @@ test.each(['single', 'reusable', 'already-used', 'unknown'])('redemption handles
         expect(scene.gifts.deleteGiftCode).not.toHaveBeenCalled();
     }
 });
-test.each([0, -10, NaN, Infinity])('coin transfer rejects invalid amount %s before balance writes', async amount => {
+test.each([0, -10, 1.2, NaN, Infinity, Number.MAX_SAFE_INTEGER + 1])('coin transfer rejects invalid amount %s before balance writes', async amount => {
     scene.options.amount = amount;
     await scene.execute('commands/coinTransfer.js');
     expect(scene.economy.removeCoins).not.toHaveBeenCalled();
@@ -172,22 +172,40 @@ test.each([0, -10, NaN, Infinity])('coin transfer rejects invalid amount %s befo
     expect(scene.economy.transferCoins).not.toHaveBeenCalled();
     expect(scene.t).toHaveBeenCalledWith('transfer_coins.lower_than_zero_text');
 });
+test.each([
+    ['sender_missing', 'transfer_coins.no_account_text'],
+    ['recipient_missing', 'transfer_coins.no_account_receiver_text'],
+    ['same_user', 'transfer_coins.same_user_text'],
+    ['invalid_amount', 'transfer_coins.lower_than_zero_text'],
+    ['invalid_balance', 'transfer_coins.invalid_balance_text'],
+    ['insufficient_funds', 'transfer_coins.not_enough_coins_text']
+])('coin transfer reports %s without sending success notifications', async (reason, translationKey) => {
+    scene.economy.transferCoins.mockResolvedValue({ ok: false, reason });
+    scene.t.mockResolvedValue('Transfer declined');
+
+    await scene.execute('commands/coinTransfer.js');
+
+    expect(scene.economy.transferCoins).toHaveBeenCalledWith(scene.user.id, scene.recipient.id, 10);
+    expect(scene.t).toHaveBeenCalledWith(translationKey);
+    expect(replyData(scene).embeds[0].description).toContain('Transfer declined');
+    expect(scene.user.send).not.toHaveBeenCalled();
+    expect(scene.recipient.send).not.toHaveBeenCalled();
+    expect(scene.economy.removeCoins).not.toHaveBeenCalled();
+    expect(scene.economy.addCoins).not.toHaveBeenCalled();
+});
 test.each(['sender', 'recipient'])('coin transfer rejects a missing %s account', async missing => {
     scene.database.getObject.mockImplementation(async id => id === (missing === 'sender' ? scene.user.id : scene.recipient.id) ? null : scene.userRecord);
     await scene.execute('commands/coinTransfer.js');
     expect(scene.recipient.send).not.toHaveBeenCalled();
     expect(scene.economy.transferCoins).not.toHaveBeenCalled();
 });
-test.each([false, true])('valid transfer conserves coins and tolerates blocked DMs (%s)', async blocked => {
-    const balances = { [scene.user.id]: 1000, [scene.recipient.id]: 0 };
-    scene.economy.removeCoins.mockImplementation(async (id, amount) => { balances[id] -= amount; });
-    scene.economy.addCoins.mockImplementation(async (id, amount) => { balances[id] += amount; });
-    scene.economy.transferCoins.mockImplementation(async (from, to, amount) => {
-        balances[from] -= amount; balances[to] += amount; return { ok: true };
-    });
+test.each([false, true])('valid transfer uses the atomic operation and tolerates blocked DMs (%s)', async blocked => {
     if (blocked) { scene.user.send.mockRejectedValue(new Error('DMs disabled')); scene.recipient.send.mockRejectedValue(new Error('DMs disabled')); }
     await scene.execute('commands/coinTransfer.js');
-    expect(balances).toEqual({ [scene.user.id]: 990, [scene.recipient.id]: 10 });
+    expect(scene.economy.transferCoins).toHaveBeenCalledTimes(1);
+    expect(scene.economy.transferCoins).toHaveBeenCalledWith(scene.user.id, scene.recipient.id, 10);
+    expect(scene.economy.removeCoins).not.toHaveBeenCalled();
+    expect(scene.economy.addCoins).not.toHaveBeenCalled();
     expect(replyData(scene).embeds[0].fields[0].name).toContain('10');
 });
 
