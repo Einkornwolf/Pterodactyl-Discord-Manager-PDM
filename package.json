@@ -1,17 +1,17 @@
 {
   "dependencies": {
-    "@napi-rs/canvas": "^0.1.100",
+    "@napi-rs/canvas": "^1.0.10",
     "ascii-table": "^0.0.9",
     "axios": "^1.20.0",
     "better-sqlite3": "^13.0.3",
     "cron": "^4.4.0",
     "discord.js": "^14.27.0",
-    "dotenv": "^17.4.2",
-    "glob": "^11.1.0",
+    "dotenv": "^18.0.5",
+    "glob": "^13.0.6",
     "quick.db": "^9.1.7"
   },
   "devDependencies": {
-    "jest": "^29.7.0"
+    "jest": "^30.5.2"
   },
   "scripts": {
     "test": "jest",
