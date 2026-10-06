@@ -72,7 +72,7 @@ module.exports = {
       return;
     }
     let { attributes: { resources: { memory_bytes, cpu_absolute, uptime } } } = serverLiveUsage ? serverLiveUsage : { attributes: { resources: { memory_bytes: 0, cpu_absolute: 0, uptime: 0 } } }
-    let liveRam = !serverLiveUsage ? "N/A" : Math.ceil(memory_bytes * 0.00000095367432), liveCpu = !serverLiveUsage ? "N/A" : Math.ceil(cpu_absolute)
+    let liveRam = !serverLiveUsage ? "N/A" : Math.ceil(memory_bytes / (1024 * 1024)), liveCpu = !serverLiveUsage ? "N/A" : Math.ceil(cpu_absolute)
     let serverUptime = !serverLiveUsage ? "N/A" : Math.ceil(uptime / 60 / 60), serverSuspended = suspended ? await t("server_manager_events.server_suspended_text") : await t("server_manager_events.server_suspended_text_no")
     let serverRuntime = await panel.getServerRuntime(identifier), suspensionData, deletionData
 

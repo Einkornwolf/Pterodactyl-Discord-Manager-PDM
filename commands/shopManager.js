@@ -99,6 +99,7 @@ module.exports = {
               components: [new ActionRowBuilder().addComponents(shopSelect)],
               flags: MessageFlags.Ephemeral
             })
+            break;
           }
           case false: {
             //Shop is not empty
@@ -134,4 +135,3 @@ module.exports = {
     }
   }
 }
-

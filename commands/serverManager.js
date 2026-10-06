@@ -80,6 +80,7 @@ module.exports = {
       .setFooter({ text: "1" })
 
     let selectServerMenu = new StringSelectMenuBuilder().setCustomId("serverSelect")
+    const rightArrowEmoji = emojiManager.parseEmoji(await emojiManager.getEmoji("emoji_arrow_right")) || "▶️";
 
     //Add Embed and Select Fields
     for (let i = 0; i < 25 && i < userServers.length; i++) {
@@ -115,7 +116,6 @@ module.exports = {
       ])
 
       const playEmoji = emojiManager.parseEmoji(await emojiManager.getEmoji("emoji_play")) || "▶️";
-      const rightArrowEmoji = emojiManager.parseEmoji(await emojiManager.getEmoji("emoji_arrow_right")) || "▶️";
 
       selectServerMenu.addOptions([
         {
@@ -149,4 +149,3 @@ module.exports = {
     })
   }
 }
-

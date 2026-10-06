@@ -82,7 +82,7 @@ module.exports = {
     //Get Live Resource Usage and destructure
     let serverLiveUsage = await panel.liveServerRessourceUsage(identifier)
     let { attributes: { resources: { uptime, memory_bytes, cpu_absolute }, suspended } } = serverLiveUsage
-    let liveRam = !serverLiveUsage ? "N/A" : Math.ceil(memory_bytes * 0.00000095367432), liveCpu = !serverLiveUsage ? "N/A" : Math.ceil(cpu_absolute)
+    let liveRam = !serverLiveUsage ? "N/A" : Math.ceil(memory_bytes / (1024 * 1024)), liveCpu = !serverLiveUsage ? "N/A" : Math.ceil(cpu_absolute)
     let serverUptime = !serverLiveUsage ? "N/A" : Math.ceil(uptime / 60 / 60), serverSuspended = suspended ? await t("server_manager_events.server_suspended_text") : await t("server_manager_events.server_suspended_text_no")
 
     //Save Information
