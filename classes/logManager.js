@@ -3,51 +3,41 @@
  * All rights reserved.
  */
 
-const fs = require("fs");
+const fs = require('node:fs/promises');
+const path = require('node:path');
 
 class LogManager {
-    /**
-     * Manages the Logging
-     * 
-     */
-    constructor() {
+    constructor(filePath = 'log/log.txt') {
+        const logFile = path.resolve(filePath);
 
-        //Get Timestamp for Logging
         this.getLogTimestamp = async function () {
-            this.currentDate = new Date()
-            return `[${this.currentDate.getFullYear()}-${("0" + (this.currentDate.getMonth() + 1)).slice(-2)}-${("0" + this.currentDate.getDate()).slice(-2)} ${this.currentDate.getHours()}:${this.currentDate.getMinutes()}:${this.currentDate.getSeconds()} UTC+${(this.currentDate.getTimezoneOffset() /60) * -1}]`
-        }
+            const date = new Date();
+            const pad = number => String(number).padStart(2, '0');
+            const offset = -date.getTimezoneOffset();
+            const sign = offset < 0 ? '-' : '+';
+            return `[${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ` +
+                `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())} UTC${sign}${pad(Math.floor(Math.abs(offset) / 60))}:${pad(Math.abs(offset) % 60)}]`;
+        };
 
-        //Check if Log File exists
         this.checkForLogFile = async function () {
-            await fs.promises.readFile(`./../log/log.txt`)
-            .then(async () => {
-                return true
-            })
-            .catch(async () => {
-                return false
-            })
-        }
+            try { await fs.access(logFile); return true; }
+            catch (error) {
+                if (error.code === 'ENOENT') return false;
+                throw error;
+            }
+        };
 
-        //Create Log File
         this.createLogFile = async function () {
-            await fs.promises.appendFile(`./../log/log.txt`, "")
-            .then(async () => {
-                return true
-            })
-            .catch(async () => {
-                return false
-            })
-        }
+            await fs.mkdir(path.dirname(logFile), { recursive: true });
+            await fs.appendFile(logFile, '');
+            return true;
+        };
 
-        //Log String
-        this.logString = async function (data = new String) {
-            this.timestamp = await this.getLogTimestamp()
-            await fs.promises.appendFile(`log/log.txt`, `${this.timestamp} ${data} \n`, function (e) {})
-        }
+        this.logString = async function (data = '') {
+            await fs.mkdir(path.dirname(logFile), { recursive: true });
+            await fs.appendFile(logFile, `${await this.getLogTimestamp()} ${data}\n`);
+        };
     }
 }
 
-module.exports = {
-    LogManager
-}
+module.exports = { LogManager };
