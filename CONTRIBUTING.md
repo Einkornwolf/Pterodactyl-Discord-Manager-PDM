@@ -53,12 +53,12 @@ To maintain code quality, please adhere to the following standard procedure for 
 8.  **Submit a Pull Request:** Open a pull request from your branch to the `main` branch of the upstream repository.
 
 ## Development Environment Setup
-A local development environment requires **Node.js** (version 16.x or higher is recommended).
+A local development environment requires **Node.js 24.17+ or 26.x**, as specified in `package.json`.
 
 1.  **Clone the repository** as described above.
 2.  **Install dependencies:**
     ```bash
-    npm install
+    npm ci --ignore-scripts
     ```
 3.  **Create the configuration file:** Create a new file named `config.env` in the project's root directory.
 4.  **Configure the application:** Copy the template from the [README](./README.md#installation) into `config.env` and populate it with your specific configuration values.
@@ -66,6 +66,8 @@ A local development environment requires **Node.js** (version 16.x or higher is 
     ```bash
     node bot.js
     ```
+
+For changes to code, run `npm run test:ci` before opening a PR. Tests use isolated fixtures and do not require `config.env`, a Discord login, or a live panel. See [TESTING.md](./TESTING.md) for coverage, test boundaries, and CI details.
 
 ## Contributor License Agreement
 All contributions to this project are subject to its **Custom Non-Commercial Copyleft License (CNCCL)**. By submitting a Pull Request, you agree that your work will be licensed under these terms. All existing copyright and license notices must be preserved in all files.

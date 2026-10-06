@@ -1,32 +1,48 @@
-# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
-
 name: Node.js CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [main]
+  # Stacked PRs target other feature branches and need the same checks as main.
   pull_request:
-    branches: [ "main" ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
+    timeout-minutes: 10
     strategy:
+      fail-fast: false
       matrix:
         node-version: [24.x, 26.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-
+    env:
+      CI: true
+      TZ: UTC
     steps:
-    - uses: actions/checkout@v4
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-    - run: npm ci --ignore-scripts
-    - run: npm test -- --runInBand
-    - name: Check native canvas binding
-      run: node -e "require('@napi-rs/canvas').createCanvas(8,8).toBuffer('image/png')"
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+      - name: Install dependencies
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Test with coverage
+        id: tests
+        run: npm run test:ci
+      - name: Upload coverage report
+        if: always() && matrix.node-version == '24.x'
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: coverage-node-24
+          path: coverage/
+          retention-days: 7

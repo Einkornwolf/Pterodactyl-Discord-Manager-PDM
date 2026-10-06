@@ -34,14 +34,15 @@ class SeasonPassManager {
                 return "empty"
             }
 
-            if (item == "xp") {
+            const selectedType = item();
+            if (selectedType == "xp") {
                 //Random Bonus depending on the level 
                 return [
                     { type: "xp", amount: (Math.floor(Math.random() * 20) * (level / 2)) * modifier }
                 ]
             }
 
-            if (item == "coins") {
+            if (selectedType == "coins") {
                 return [
                     { type: "coins", amount: (Math.floor(Math.random() * 10) * (level / 2)) * modifier }
                 ]

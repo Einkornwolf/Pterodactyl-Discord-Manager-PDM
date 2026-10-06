@@ -109,7 +109,8 @@ module.exports = {
         flags: MessageFlags.Ephemeral,
       });
 
-      await economyManager.removeCoins(id, einsatz), randomResult = await utility.getRandomInteger(5)
+      await economyManager.removeCoins(id, einsatz)
+      const randomResult = await utility.getRandomInteger(6)
 
       //Game Collector
       const filter = (m) => m.author.id === id;
@@ -120,11 +121,12 @@ module.exports = {
       });
       collector.on("collect", async (collected) => {
         let { content: guess } = collected
+        guess = guess.trim().length ? Number(guess) : NaN
         try {
           await collected.delete();
         } catch { }
         //Check if the User guessed the correct Number
-        if (!Number.isFinite(guess) || guess < 0 || guess > 5) {
+        if (!Number.isInteger(guess) || guess < 0 || guess > 5) {
           await interaction.editReply({
             embeds: [
               new EmbedBuilder()

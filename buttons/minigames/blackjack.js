@@ -106,6 +106,13 @@ module.exports = {
         const res = await playGame(interaction, { transition: "update", bet: einsatz, t });
         const { result, outcomes = [], dealer, multipliers = [] } = res;
 
+        if (result === 'CANCEL') {
+          await economyManager.addCoins(id, einsatz)
+          await interaction.followUp({ content: await t('minigames.result_cancel'), flags: MessageFlags.Ephemeral })
+          await logManager.logString(`${tag} cancelled blackjack: refunded=${einsatz}`)
+          return;
+        }
+
         const multipliersArr = multipliers.length ? multipliers : outcomes.map(() => 1)
 
   const extraCharges = multipliersArr.reduce((acc, m) => acc + (m - 1) * einsatz, 0) + Math.max(0, multipliersArr.length - 1) * einsatz
@@ -134,7 +141,7 @@ module.exports = {
 
         if (totalPayout > 0) await economyManager.addCoins(id, totalPayout)
         if (totalPayout > 0) await economyManager.addDailyAmount(id, Math.max(0, totalPayout - totalStake))
-/s
+
         const net = totalPayout - totalStake
         const title = net > 0 ? (await t('minigames.result_win')) : (net < 0 ? (await t('minigames.result_loss')) : (await t('minigames.result_cancel')))
 
