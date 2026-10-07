@@ -69,6 +69,9 @@ FOOTER_TEXT = "© Einkornwolf 2025"
 
 # Default language ("en-US", "de-DE", "pl-PL", "es-ES", "nl-NL or "fr-FR").
 DEFAULT_LANGUAGE="en-US"
+
+# If administrators should be allowed to use the eval-command
+ENABLE_DEVELOPER_EVAL=false
 ```
 
 3. **Install dependencies:**
