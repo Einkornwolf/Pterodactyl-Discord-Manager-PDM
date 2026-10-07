@@ -63,6 +63,31 @@ test.each(['addCoins', 'removeCoins', 'mailSwitcher', 'giftcodeManager', 'shopMa
     expect(scene.database.changeUserMail).not.toHaveBeenCalled();
     expect(scene.panel.setServerRuntime).not.toHaveBeenCalled();
 });
+
+describe.each(['addCoins', 'removeCoins', 'mailSwitcher', 'giftcodeManager', 'shopManager', 'setServerRuntime', 'balance'])('%s authorization', file => {
+    test.each(['missing', 'malformed', 'partial-id', 'invalid-entry'])('denies %s configuration without administrative writes', async configuration => {
+        const admin = scene.user.id;
+        if (configuration === 'missing') {
+            delete process.env.ADMIN_LIST;
+        } else if (configuration === 'malformed') {
+            process.env.ADMIN_LIST = '[invalid';
+        } else if (configuration === 'partial-id') {
+            process.env.ADMIN_LIST = JSON.stringify([`9${admin}`]);
+        } else {
+            process.env.ADMIN_LIST = JSON.stringify([admin, 42]);
+        }
+        scene.options.user = scene.recipient;
+
+        await scene.execute(`commands/${file}.js`);
+
+        expect(scene.t).toHaveBeenCalledWith('errors.no_admin_text');
+        expect(scene.economy.addCoins).not.toHaveBeenCalled();
+        expect(scene.economy.removeCoins).not.toHaveBeenCalled();
+        expect(scene.database.changeUserMail).not.toHaveBeenCalled();
+        expect(scene.panel.setServerRuntime).not.toHaveBeenCalled();
+    });
+});
+
 test.each(['addCoins', 'removeCoins', 'mailSwitcher'])('%s rejects a recipient without an account', async file => {
     scene.database.getObject.mockResolvedValue(null);
     await scene.execute(`commands/${file}.js`);

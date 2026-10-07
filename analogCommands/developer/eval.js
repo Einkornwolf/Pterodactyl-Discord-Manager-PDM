@@ -3,6 +3,7 @@
  * All rights reserved.
  */
 
+const { isAdmin } = require("../../classes/adminAuthorization");
 const { UtilityCollection } = require("../../classes/utilityCollection")
 const { Client, EmbedBuilder } = require("discord.js")
 const utility = new UtilityCollection()
@@ -16,11 +17,9 @@ module.exports = {
    * @param {Client} client
    */
   async execute(message, client) {
-    switch (process.env.ADMIN_LIST && process.env.ADMIN_LIST.includes(message.author.id)) {
-      case false:
-        return;
-      case true:
-        break;
+    // Evaluation must be explicitly enabled, even for administrators.
+    if (process.env.ENABLE_DEVELOPER_EVAL !== "true" || !isAdmin(message.author.id)) {
+      return;
     }
     let { content } = message, evalData = content.slice(11), timeBefore = performance.now();
 

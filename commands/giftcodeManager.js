@@ -3,6 +3,7 @@
  * All rights reserved.
  */
 
+const { isAdmin } = require("../classes/adminAuthorization");
 const { PanelManager } = require("../classes/panelManager")
 const { TranslationManager } = require("./../classes/translationManager")
 const { BoosterManager } = require("./../classes/boosterManager")
@@ -42,7 +43,7 @@ module.exports = {
         if (giftCodes == null) giftCodes = []
 
         //Check if User is an Admin
-        if (!process.env.ADMIN_LIST.includes(userId)) {
+        if (!isAdmin(userId)) {
             await interaction.editReply({
                 embeds: [
                     new EmbedBuilder()

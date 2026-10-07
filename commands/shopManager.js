@@ -3,6 +3,7 @@
  * All rights reserved.
  */
 
+const { isAdmin } = require("../classes/adminAuthorization");
 const { PanelManager } = require("../classes/panelManager")
 const { TranslationManager } = require("./../classes/translationManager")
 const { BoosterManager } = require("./../classes/boosterManager")
@@ -42,7 +43,7 @@ module.exports = {
     const clipboardEmoji = emojiManager.parseEmoji(await emojiManager.getEmoji("emoji_clipboard")) || "📝";
     //Check if User is on the Admin List
 
-    switch (process.env.ADMIN_LIST.includes(userId)) {
+    switch (isAdmin(userId)) {
       case false: {
         await interaction.editReply({
           embeds: [
