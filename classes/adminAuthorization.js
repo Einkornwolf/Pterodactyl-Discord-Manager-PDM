@@ -4,12 +4,11 @@
  */
 
 /**
- * Check a Discord user ID against the configured administrator allowlist.
- * Missing or malformed configuration denies access to every user.
+ * Check if a user-id is marked as administrator
  *
- * @param {string} userId Discord user ID; IDs must remain strings to preserve precision.
- * @param {string} [adminList=process.env.ADMIN_LIST] JSON array of strings or comma-separated IDs.
- * @returns {boolean} Whether the user is explicitly listed as an administrator.
+ * @param {string} userId Discord user ID
+ * @param {string} [adminList=process.env.ADMIN_LIST] JSON array of strings or comma-separated IDs
+ * @returns {boolean} Whether the user is an administrator
  */
 function isAdmin(userId, adminList = process.env.ADMIN_LIST) {
     if (typeof userId !== 'string' || !/^\d{17,20}$/.test(userId)) {
@@ -32,7 +31,6 @@ function isAdmin(userId, adminList = process.env.ADMIN_LIST) {
         return false;
     }
 
-    // Reject the whole list when any entry is invalid; never grant partial access.
     if (!Array.isArray(adminIds)) {
         return false;
     }
