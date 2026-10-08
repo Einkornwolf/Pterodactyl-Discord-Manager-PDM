@@ -21,14 +21,14 @@ module.exports = {
       option.setName("user").setDescription("Receiver").setRequired(true)
     )
     .addIntegerOption((option) =>
-      option.setName("amount").setDescription("Amount").setRequired(true)
+      option.setName("amount").setDescription("Amount").setMinValue(1).setRequired(true)
     )
     .addStringOption((option) =>
       option.setName("message").setDescription("Message").setRequired(false)
     )
   ,
   /**
-   * 
+   * Transfer whole coins atomically before notifying either user.
    * @param {BaseInteraction} interaction 
    * @param {Client} client 
    * @param {PanelManager} panel 
@@ -43,10 +43,15 @@ module.exports = {
    */
   async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t, giftCodeManager, emojiManager) {
     await interaction.deferReply({ flags: MessageFlags.Ephemeral })
-    let { user: { id: userId, tag }, user, guild } = interaction, fetchedUser = await user.fetch(true), { accentColor } = fetchedUser
+    const { user, guild } = interaction
+    const { id: userId, tag } = user
+    const { accentColor } = await user.fetch(true)
     const serverIconURL = guild ? guild.iconURL({ dynamic: true }) : undefined
-    let recipient = interaction.options.getUser("user"), transferAmount = interaction.options.getInteger("amount"), userData = await databaseInterface.getObject(userId), receiverData = await databaseInterface.getObject(recipient.id)
-    let transferMessage = interaction.options.getString("message")
+    const recipient = interaction.options.getUser("user")
+    const transferAmount = interaction.options.getInteger("amount")
+    const transferMessage = interaction.options.getString("message")
+    const userData = await databaseInterface.getObject(userId)
+    const receiverData = await databaseInterface.getObject(recipient.id)
 
     //Check if user has an account
     if (userData == null) {
@@ -84,11 +89,8 @@ module.exports = {
       return
     }
 
-    //Floor Value
-    let flooredAmount = Math.floor(transferAmount)
-
     //Check if transfer amount is Valid
-    if (!Number.isFinite(transferAmount) || !Number.isFinite(flooredAmount) || flooredAmount <= 0) {
+    if (!Number.isSafeInteger(transferAmount) || transferAmount <= 0) {
       await interaction.editReply({
         embeds: [
           new EmbedBuilder()
@@ -101,17 +103,26 @@ module.exports = {
         flags: MessageFlags.Ephemeral,
       });
       //Logging
-      await logManager.logString(`${tag} tried to transfer 0 Coins to ${recipient.tag}`)
+      await logManager.logString(`${tag} tried to transfer an invalid amount (${transferAmount}) to ${recipient.tag}`)
       return;
     }
 
-    //Check if User has enough Coins
-    if (userData.balance < flooredAmount || userData.balance == undefined) {
+    // Recheck balances and commit both writes in one database transaction.
+    const transfer = await economyManager.transferCoins(userId, recipient.id, transferAmount);
+    if (!transfer.ok) {
+      const reasonKey = {
+        sender_missing: "transfer_coins.no_account_text",
+        recipient_missing: "transfer_coins.no_account_receiver_text",
+        same_user: "transfer_coins.same_user_text",
+        invalid_amount: "transfer_coins.lower_than_zero_text",
+        invalid_balance: "transfer_coins.invalid_balance_text",
+        insufficient_funds: "transfer_coins.not_enough_coins_text"
+      }[transfer.reason];
       await interaction.editReply({
         embeds: [
           new EmbedBuilder()
-            .setTitle(`${await emojiManager.getEmoji("emoji_error")} ${await t("transfer_coins.not_enough_coins_label")} ${await emojiManager.getEmoji("emoji_error")}`)
-            .setDescription(`${await emojiManager.getEmoji("emoji_arrow_down_right")} **${await t("transfer_coins.not_enough_coins_text")}**`)
+            .setTitle(`${await emojiManager.getEmoji("emoji_error")} ${await t("errors.error_label")} ${await emojiManager.getEmoji("emoji_error")}`)
+            .setDescription(`${await emojiManager.getEmoji("emoji_arrow_down_right")} **${await t(reasonKey)}**`)
             .setColor(accentColor ? accentColor : 0xe6b04d)
             .setFooter({ text: process.env.FOOTER_TEXT, iconURL: serverIconURL })
             .setTimestamp()
@@ -119,20 +130,17 @@ module.exports = {
         flags: MessageFlags.Ephemeral,
       });
       //Logging
-      await logManager.logString(`${tag} tried to transfer ${flooredAmount} Coins to ${recipient.tag}, but did not have enough Coins: ${await economyManager.getUserBalance(userId)}`)
+      await logManager.logString(`${tag} tried to transfer ${transferAmount} Coins to ${recipient.tag}, but the transfer was rejected: ${transfer.reason}`)
       return;
     }
 
-    //Remove Coins from User and add to Recipient
-    await economyManager.removeCoins(userId, flooredAmount), await economyManager.addCoins(recipient.id, flooredAmount)
-    // let user = interaction.client.users.cache.get(empfaenger.id);
     //Logging
-    await logManager.logString(`${tag} transfered ${flooredAmount} Coin|s to ${recipient.tag}`)
+    await logManager.logString(`${tag} transferred ${transferAmount} Coin|s to ${recipient.tag}`)
 
-    //Get recipients Languagee
-    let empfaengerLanguage = new TranslationManager(recipient.id)
-    let eT = async function (key) {
-      return await empfaengerLanguage.getTranslation(key)
+    //Get recipients Language
+    const recipientLanguage = new TranslationManager(recipient.id)
+    const eT = async function (key) {
+      return await recipientLanguage.getTranslation(key)
     }
 
     //Send DMs
@@ -142,7 +150,7 @@ module.exports = {
           new EmbedBuilder()
             .setTitle(`${await emojiManager.getEmoji("emoji_logo")} ${await eT("transfer_coins.main_label")}`)
             .addFields(
-              { name: `${await emojiManager.getEmoji("emoji_arrow_down_right")} ${interaction.member.user.username} ${await eT("transfer_coins.dm_receive_text")}`, value: `\`\`\`js\n$ ${flooredAmount} Coin|s\`\`\`` },
+              { name: `${await emojiManager.getEmoji("emoji_arrow_down_right")} ${interaction.member.user.username} ${await eT("transfer_coins.dm_receive_text")}`, value: `\`\`\`js\n$ ${transferAmount} Coin|s\`\`\`` },
               { name: `${await emojiManager.getEmoji("emoji_arrow_down_right")} ${await eT("transfer_coins.dm_message_label")}`, value: `\`\`\`js\n${transferMessage ? transferMessage : "-"}\`\`\`` }
             )
             .setColor(accentColor ? accentColor : 0xe6b04d)
@@ -157,7 +165,7 @@ module.exports = {
           new EmbedBuilder()
             .setTitle(`${await emojiManager.getEmoji("emoji_logo")} ${await eT("transfer_coins.main_label")}`)
             .addFields(
-              { name: `${await emojiManager.getEmoji("emoji_arrow_down_right")} ${flooredAmount} ${await t("transfer_coins.dm_send_text")}`, value: `\`\`\`js\n${recipient.username}\`\`\`` },
+              { name: `${await emojiManager.getEmoji("emoji_arrow_down_right")} ${transferAmount} ${await t("transfer_coins.dm_send_text")}`, value: `\`\`\`js\n${recipient.username}\`\`\`` },
               { name: `${await emojiManager.getEmoji("emoji_arrow_down_right")} ${await eT("transfer_coins.dm_message_label")}`, value: `\`\`\`js\n${transferMessage ? transferMessage : "-"}\`\`\`` }
             )
             .setColor(accentColor ? accentColor : 0xe6b04d)
@@ -173,7 +181,7 @@ module.exports = {
         new EmbedBuilder()
           .setTitle(`${await emojiManager.getEmoji("emoji_logo")} ${await t("transfer_coins.main_label")}`)
           .addFields(
-            { name: `${await emojiManager.getEmoji("emoji_arrow_down_right")} ${flooredAmount} ${await t("transfer_coins.success_text")}`, value: `\`\`\`js\n${recipient.username}\`\`\`` }
+            { name: `${await emojiManager.getEmoji("emoji_arrow_down_right")} ${transferAmount} ${await t("transfer_coins.success_text")}`, value: `\`\`\`js\n${recipient.username}\`\`\`` }
           )
           .setColor(accentColor ? accentColor : 0xe6b04d)
           .setFooter({ text: process.env.FOOTER_TEXT, iconURL: serverIconURL })

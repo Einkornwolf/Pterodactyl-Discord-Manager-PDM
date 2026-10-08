@@ -319,5 +319,7 @@
 	"account_manager.link_text": "Bestehenden Account verlinken",
 	"account_manager_modal.api_label": "API-Schlüssel des Accounts",
 	"account_manager_events.account_link_fail_text": "Verlinkung fehlgeschlagen! Eventuell ist dieser Panel-Account bereits mit anderen Discord-User verlinkt oder der API-Key ist fehlerhaft",
-	"account_manager.link_success": "Account erfolgreich verlinkt"
+	"account_manager.link_success": "Account erfolgreich verlinkt",
+	"transfer_coins.same_user_text": "Du kannst keine Coins an dich selbst übertragen.",
+	"transfer_coins.invalid_balance_text": "Einer der Kontostände ist ungültig."
 }

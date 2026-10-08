@@ -6,8 +6,11 @@
 const { DataBaseInterface } = require("./dataBaseInterface")
 
 class EconomyManager extends DataBaseInterface {
-    constructor() {
-        super()
+    /**
+     * @param {string} [filePath] SQLite database file shared with other managers.
+     */
+    constructor(filePath) {
+        super(filePath)
         //Add Coins to User
         this.addCoins = async function (userId, amount) {
             return await this.addUserValue(userId, ".balance", amount)
@@ -25,31 +28,31 @@ class EconomyManager extends DataBaseInterface {
 
         //Get Users Balance
         this.getUserBalance = async function (userId) {
-            this.userData = await this.getObject(userId)
-            if (this.userData == null) return null
-            return this.userData.balance
+            const userData = await this.getObject(userId)
+            if (userData == null) {
+                return null
+            }
+            return userData.balance
         }
 
         //Get Total Amount of Coins in Database
         this.getTotalCoinAmount = async function () {
-            this.entireDatabase = await this.fetchAll()
-            this.totalCoinAmount = 0
-            for (let object of this.entireDatabase) {
-                let { value: { balance } } = object
-                if (object) if (balance != undefined) this.totalCoinAmount += balance
+            const entireDatabase = await this.fetchAll()
+            let totalCoinAmount = 0
+            for (const { value } of entireDatabase) {
+                if (Number.isFinite(value?.balance)) {
+                    totalCoinAmount += value.balance
+                }
             }
-            return this.totalCoinAmount
+            return totalCoinAmount
         }
 
-        //Get List of top Users in Reversed Order
+        //Get Users with nonzero balances in ascending order for the leaderboard
         this.getTopUsers = async function () {
-            this.userDatabase = await this.fetchAll()
-            await this.userDatabase.sort(function (a, b) { if (a.value.balance == undefined) return -Infinity; return a.value.balance - b.value.balance })
-            this.userDatabase = this.userDatabase.filter(user => {               // Kein Key = kein gültiger User
-                if (!user.value?.balance) return false;        // Kein Balance-Feld = überspringen          // z. B. falls Key keine Discord-ID ist
-                return true;
-            });
-            return this.userDatabase
+            const userDatabase = await this.fetchAll()
+            return userDatabase
+                .filter(user => Number.isFinite(user.value?.balance) && user.value.balance !== 0)
+                .sort((a, b) => a.value.balance - b.value.balance)
         }
 
         //Add Daily Amount to User
@@ -67,24 +70,24 @@ class EconomyManager extends DataBaseInterface {
             return await this.removeUserValue(userId, ".daily", amount)
         }
 
-        //Get Users Daily 
+        //Get Users Daily
         this.getUserDaily = async function (userId) {
-            this.userData = await this.getObject(userId)
-            return this.userData.daily
+            const userData = await this.getObject(userId)
+            if (userData == null) {
+                return null
+            }
+            return userData.daily
         }
 
         //Reset all Dailys
         this.resetAllDailyAmounts = async function () {
-            this.entireDatabase = await this.fetchAll()
-            for (let object of this.entireDatabase) {
-                let { value: { daily }, id } = object
-                if (daily) await this.setDailyAmount(id, 0)
+            const entireDatabase = await this.fetchAll()
+            for (const { value, id } of entireDatabase) {
+                if (value?.daily) {
+                    await this.setDailyAmount(id, 0)
+                }
             }
         }
-
-
-
-
     }
 }
 
