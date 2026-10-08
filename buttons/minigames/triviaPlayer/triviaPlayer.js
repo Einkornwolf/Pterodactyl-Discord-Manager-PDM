@@ -3,6 +3,7 @@
  * All rights reserved.
  */
 
+const { onAsync } = require("../../../classes/collectorEvents");
 const { TranslationManager } = require("../../../classes/translationManager")
 const { PanelManager } = require("../../../classes/panelManager")
 const { BoosterManager } = require("../../../classes/boosterManager")
@@ -11,7 +12,6 @@ const { EconomyManager } = require("../../../classes/economyManager")
 const { LogManager } = require("../../../classes/logManager")
 const { DataBaseInterface } = require("../../../classes/dataBaseInterface")
 const { BaseInteraction, Client, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ComponentType, MessageFlags } = require("discord.js")
-const { request } = require("undici");
 const { EmojiManager } = require("../../../classes/emojiManager")
 
 module.exports = {
@@ -74,7 +74,7 @@ module.exports = {
             max: 1,
         });
 
-        triviaCollector.on("collect", async (collected) => {
+        onAsync(triviaCollector, "collect", async (collected) => {
             let { content: einsatz } = collected
             einsatz = parseInt(einsatz)
             //Try to delete message
@@ -106,7 +106,9 @@ module.exports = {
             }
 
             //Get Questions
-            let { body } = await request(`https://the-trivia-api.com/api/questions?limit=1&difficulty=${mode}`), apiData = await body.json()
+            const response = await fetch(`https://the-trivia-api.com/api/questions?limit=1&difficulty=${mode}`, { signal: AbortSignal.timeout(15000) });
+            if (!response.ok) throw new Error(`Trivia API returned ${response.status}`);
+            const apiData = await response.json();
 
             if (!apiData) return
             let { category, tags, question, type, id, difficulty, incorrectAnswers, correctAnswer } = apiData[0]
@@ -182,19 +184,19 @@ module.exports = {
 
             )
 
-            await interaction.editReply({
+            const questionMessage = await interaction.editReply({
                 embeds: [questionEmbed],
                 components: [buttonRow],
                 flags: MessageFlags.Ephemeral
             })
 
             const answerFilter = i => {
-                return i.user.id === userId
+                return i.user.id === userId && ["A", "B", "C", "D"].includes(i.customId)
             }
 
-            const answerCollector = interaction.channel.createMessageComponentCollector({ componentType: ComponentType.Button, time: 30000, max: 1, filter: answerFilter });
+            const answerCollector = questionMessage.createMessageComponentCollector({ componentType: ComponentType.Button, time: 30000, max: 1, filter: answerFilter });
 
-            answerCollector.on('collect', async answerButton => {
+            onAsync(answerCollector, 'collect', async answerButton => {
                 try {
                 await answerButton.deferReply({ flags: MessageFlags.Ephemeral })
                 } catch {}
@@ -237,7 +239,7 @@ module.exports = {
                     })
             });
 
-            answerCollector.on("end", async answerButton => {
+            onAsync(answerCollector, "end", async answerButton => {
                 if(answerButton.size == 1) return
                 await interaction.editReply({
                     embeds: [
