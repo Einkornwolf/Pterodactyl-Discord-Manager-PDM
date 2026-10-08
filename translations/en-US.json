@@ -5,7 +5,7 @@
 	"errors.cancel_label": "Cancelled!",
 	"override_runtime.override_text": "The runtime of the server has been set!",
 	"override_runtime.override_label": "Success!",
-	"override_runtimehas_runtime_text": "The server already has an assigned runtime. Should this be overridden?",
+	"override_runtime.has_runtime_text": "The server already has an assigned runtime. Should this be overridden?",
 	"override_runtime.has_runtime_label": "Warning!",
 	"override_runtime.error": "The server belongs to a Panel user who does not have a bot account. Runtime cannot be set.",
 	"giftcode_manager.code_not_found": "The code to be deleted was not found. Has it already been deleted?",
