@@ -4,7 +4,7 @@
 	"errors.cancel_label" : "Annulé !",
 	"override_runtime.override_text" : "Le temps d'exécution du serveur a été fixé !",
 	"override_runtime.override_label" : "Succès !",
-	"override_runtimehas_runtime_text" : "Le serveur a déjà une durée de fonctionnement attribuée. Faut-il l'écraser ?",
+	"override_runtime.has_runtime_text" : "Le serveur a déjà une durée de fonctionnement attribuée. Faut-il l'écraser ?",
 	"override_runtime.has_runtime_label" : "Avertissement !",
 	"override_runtime.error" : "Le serveur appartient à un utilisateur du tableau de bord qui n'a pas de compte bot. Le temps d'exécution ne peut pas être défini",
 	"giftcode_manager.code_not_found" : "Le code à supprimer n'a pas été trouvé. A-t-il déjà été supprimé ?",

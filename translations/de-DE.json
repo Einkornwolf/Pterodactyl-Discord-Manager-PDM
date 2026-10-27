@@ -4,7 +4,7 @@
 	"errors.cancel_label": "Abgebrochen!",
 	"override_runtime.override_text": "Die Laufzeit des Servers wurde gesetzt!",
 	"override_runtime.override_label": "Erfolg!",
-	"override_runtimehas_runtime_text": "Der Server hat bereits eine zugewiesene Laufzeit. Soll diese überschrieben werden?",
+	"override_runtime.has_runtime_text": "Der Server hat bereits eine zugewiesene Laufzeit. Soll diese überschrieben werden?",
 	"override_runtime.has_runtime_label": "Warnung!",
 	"override_runtime.error": "Der Server gehört einem Panel-Nutzer, welcher keinen Bot-Account hat. Laufzeit kann nicht gesetzt werden.",
 	"giftcode_manager.code_not_found": "Der zu löschende Code wurde nicht gefunden. Wurde er schon gelöscht?",
