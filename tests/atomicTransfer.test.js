@@ -49,7 +49,9 @@ test.each([
     scene.economy = economy;
     scene.database = db;
     scene.options.amount = amount;
-    if (missing) await db.deleteUser(missing);
+    if (missing) {
+        await db.deleteUser(missing);
+    }
     const before = await db.fetchAll();
 
     await scene.execute('commands/coinTransfer.js');

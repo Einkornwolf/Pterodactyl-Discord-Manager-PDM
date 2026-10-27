@@ -35,13 +35,15 @@ client.modals = new Collection()
 client.analogCommands = new Collection()
 client.cronJobs = new Collection()
 
-// Register listeners before connecting; do not leave startup rejections unhandled.
+//Load Events and Login Bot
 async function start() {
-    await client.loadEvents();
-    await client.login(token);
+	await client.loadEvents()
+	await client.login(token)
 }
+
+//Handle Startup Errors
 start().catch(async error => {
-    console.error('Bot startup failed:', error);
-    await client.destroy();
-    process.exitCode = 1;
-});
+	console.error('Bot startup failed:', error)
+	await client.destroy()
+	process.exitCode = 1
+})
