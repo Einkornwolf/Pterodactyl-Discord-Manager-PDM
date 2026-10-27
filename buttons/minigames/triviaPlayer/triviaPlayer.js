@@ -3,7 +3,7 @@
  * All rights reserved.
  */
 
-const { onAsync } = require("../../../classes/collectorEvents");
+const { onAsync } = require("../../../classes/collectorEvents")
 const { TranslationManager } = require("../../../classes/translationManager")
 const { PanelManager } = require("../../../classes/panelManager")
 const { BoosterManager } = require("../../../classes/boosterManager")
@@ -106,9 +106,11 @@ module.exports = {
             }
 
             //Get Questions
-            const response = await fetch(`https://the-trivia-api.com/api/questions?limit=1&difficulty=${mode}`, { signal: AbortSignal.timeout(15000) });
-            if (!response.ok) throw new Error(`Trivia API returned ${response.status}`);
-            const apiData = await response.json();
+            const response = await fetch(`https://the-trivia-api.com/api/questions?limit=1&difficulty=${mode}`, { signal: AbortSignal.timeout(15000) })
+            if (!response.ok) {
+              throw new Error(`Trivia API returned ${response.status}`)
+            }
+            const apiData = await response.json()
 
             if (!apiData) return
             let { category, tags, question, type, id, difficulty, incorrectAnswers, correctAnswer } = apiData[0]
@@ -196,7 +198,7 @@ module.exports = {
 
             const answerCollector = questionMessage.createMessageComponentCollector({ componentType: ComponentType.Button, time: 30000, max: 1, filter: answerFilter });
 
-            onAsync(answerCollector, 'collect', async answerButton => {
+            onAsync(answerCollector, "collect", async answerButton => {
                 try {
                 await answerButton.deferReply({ flags: MessageFlags.Ephemeral })
                 } catch {}

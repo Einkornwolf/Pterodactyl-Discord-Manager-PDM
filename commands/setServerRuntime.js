@@ -3,7 +3,7 @@
  * All rights reserved.
  */
 
-const { onAsync } = require("../classes/collectorEvents");
+const { onAsync } = require("../classes/collectorEvents")
 const { isAdmin } = require("../classes/adminAuthorization");
 const { PanelManager } = require("../classes/panelManager")
 const { TranslationManager } = require("./../classes/translationManager")
@@ -127,7 +127,7 @@ module.exports = {
 
             const answerCollector = runtimeMessage.createMessageComponentCollector({ componentType: ComponentType.Button, time: 30000, max: 1, filter: answerFilter });
 
-            onAsync(answerCollector, 'collect', async answerButton => {
+            onAsync(answerCollector, "collect", async answerButton => {
                 await interaction.editReply({
                     components: [new ActionRowBuilder().addComponents([
                         new ButtonBuilder()
