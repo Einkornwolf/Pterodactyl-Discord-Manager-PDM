@@ -50,64 +50,7 @@ module.exports = {
     const recipient = interaction.options.getUser("user")
     const transferAmount = interaction.options.getInteger("amount")
     const transferMessage = interaction.options.getString("message")
-    const userData = await databaseInterface.getObject(userId)
-    const receiverData = await databaseInterface.getObject(recipient.id)
-
-    //Check if user has an account
-    if (userData == null) {
-      await interaction.editReply({
-        embeds: [
-          new EmbedBuilder()
-            .setTitle(`${await emojiManager.getEmoji("emoji_error")} ${await t("transfer_coins.no_account_label")} ${await emojiManager.getEmoji("emoji_error")}`)
-            .setDescription(`${await emojiManager.getEmoji("emoji_arrow_down_right")} **${await t("transfer_coins.no_account_text")}**`)
-            .setColor(accentColor ? accentColor : 0xe6b04d)
-            .setFooter({ text: process.env.FOOTER_TEXT, iconURL: serverIconURL })
-            .setTimestamp()
-        ],
-        flags: MessageFlags.Ephemeral,
-      });
-      //Logging
-      await logManager.logString(`${tag} tried to use /transfer_coins without an account`)
-      return
-    }
-
-    //Check if recipient has an account
-    if (receiverData == null) {
-      await interaction.editReply({
-        embeds: [
-          new EmbedBuilder()
-            .setTitle(`${await emojiManager.getEmoji("emoji_error")} ${await t("transfer_coins.no_account_receiver_label")} ${await emojiManager.getEmoji("emoji_error")}`)
-            .setDescription(`${await emojiManager.getEmoji("emoji_arrow_down_right")} **${await t("transfer_coins.no_account_receiver_text")}**`)
-            .setColor(accentColor ? accentColor : 0xe6b04d)
-            .setFooter({ text: process.env.FOOTER_TEXT, iconURL: serverIconURL })
-            .setTimestamp()
-        ],
-        flags: MessageFlags.Ephemeral,
-      });
-      //Logging
-      await logManager.logString(`${tag} tried to transfer Coins to a User who does not have an Account`)
-      return
-    }
-
-    //Check if transfer amount is Valid
-    if (!Number.isSafeInteger(transferAmount) || transferAmount <= 0) {
-      await interaction.editReply({
-        embeds: [
-          new EmbedBuilder()
-            .setTitle(`${await emojiManager.getEmoji("emoji_error")} ${await t("transfer_coins.lower_than_zero_label")} ${await emojiManager.getEmoji("emoji_error")}`)
-            .setDescription(`${await emojiManager.getEmoji("emoji_arrow_down_right")} **${await t("transfer_coins.lower_than_zero_text")}**`)
-            .setColor(accentColor ? accentColor : 0xe6b04d)
-            .setFooter({ text: process.env.FOOTER_TEXT, iconURL: serverIconURL })
-            .setTimestamp()
-        ],
-        flags: MessageFlags.Ephemeral,
-      });
-      //Logging
-      await logManager.logString(`${tag} tried to transfer an invalid amount (${transferAmount}) to ${recipient.tag}`)
-      return;
-    }
-
-    // Recheck balances and commit both writes in one database transaction.
+    // Validate accounts, amount and balances in the same operation as both writes.
     const transfer = await economyManager.transferCoins(userId, recipient.id, transferAmount);
     if (!transfer.ok) {
       const reasonKey = {

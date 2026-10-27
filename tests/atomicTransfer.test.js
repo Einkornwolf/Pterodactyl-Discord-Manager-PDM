@@ -4,6 +4,7 @@ const path = require('node:path');
 const SQLite = require('better-sqlite3');
 const { DataBaseInterface } = require('../classes/dataBaseInterface');
 const { EconomyManager } = require('../classes/economyManager');
+const { makeScene } = require('./helpers/handlerHarness');
 
 let directory;
 let filename;
@@ -35,6 +36,28 @@ beforeEach(async () => {
 afterEach(async () => {
     await DataBaseInterface.closeAll();
     fs.rmSync(directory, { recursive: true, force: true });
+});
+
+test.each([
+    ...[0, -10, 1.2, NaN, Infinity, Number.MAX_SAFE_INTEGER + 1].map(amount => [amount, null, 'lower_than_zero_text']),
+    [10, 'sender', 'no_account_text'],
+    [10, 'recipient', 'no_account_receiver_text']
+])('command rejects amount %s with missing account %s without writes or notifications', async (amount, missing, reason) => {
+    const scene = makeScene();
+    scene.user.id = 'sender';
+    scene.recipient.id = 'recipient';
+    scene.economy = economy;
+    scene.database = db;
+    scene.options.amount = amount;
+    if (missing) await db.deleteUser(missing);
+    const before = await db.fetchAll();
+
+    await scene.execute('commands/coinTransfer.js');
+
+    expect(await db.fetchAll()).toEqual(before);
+    expect(scene.t).toHaveBeenCalledWith(`transfer_coins.${reason}`);
+    expect(scene.user.send).not.toHaveBeenCalled();
+    expect(scene.recipient.send).not.toHaveBeenCalled();
 });
 
 test('overlapping transfers cannot spend the same balance twice', async () => {
