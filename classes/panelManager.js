@@ -44,8 +44,7 @@ class PanelManager {
         `/api/application/users?filter[email]=${encodeURIComponent(eMail)}&include=servers&per_page=10000`,
         "application"
       );
-      const userData = userDataObject.data.data.find(user => user.attributes.email == eMail)
-      return userData;
+      return userDataObject.data.data.find(user => user.attributes.email == eMail);
     };
 
     //Add User to Panel
@@ -56,10 +55,7 @@ class PanelManager {
       lastName,
       passkey
     ) {
-      let password;
-      passkey
-        ? (password = passkey)
-        : (password = await new Password().generatePassword(10));
+      const password = passkey || await new Password().generatePassword(10);
       return await this.axios.post(
         `/api/application/users`,
         {
@@ -86,10 +82,7 @@ class PanelManager {
 
     //Reset User Password
     this.resetUserPassword = async function (eMail, passkey) {
-      let password;
-      passkey
-        ? (password = passkey)
-        : (password = await new Password().generatePassword(15));
+      const password = passkey || await new Password().generatePassword(15);
       const userAccountData = await this.checkAccount(eMail);
       const userData = userAccountData.attributes;
       let { username, first_name, last_name } = userData
@@ -237,18 +230,16 @@ class PanelManager {
 
     //Check if server is still being installed
     this.getInstallStatus = async function (serverIdentifier) {
-      let serverUsage;
       try {
-        serverUsage = await this.axios.get(`/api/client/servers/${serverIdentifier}/resources`, "client")
+        await this.axios.get(`/api/client/servers/${serverIdentifier}/resources`, "client")
         return true
       } catch (e) { return false }
     }
 
     //Get Live Ressource Usage from a specific Server
     this.liveServerRessourceUsage = async function (serverId) {
-      let serverUsage;
       try {
-        serverUsage = await this.axios.get(
+        const serverUsage = await this.axios.get(
           `/api/client/servers/${serverId}/resources`,
           "client"
         );
@@ -579,7 +570,7 @@ class PanelManager {
         }
       }
 
-      return serverList ?? null
+      return serverList
 
     }
 
@@ -618,13 +609,6 @@ class PanelManager {
  * @returns E-Mail of connected Account or null (if Account does not exist)
  */
     this.getUserEmailFromAPIKey = async function (key) {
-      const records = await database.fetchAll()
-      const users = records.filter((object) => {
-        if (object.id.length == 18) return true
-      })
-
-      const userEmails = users.map(user => user.value.e_mail)
-
       let accountData = null;
       let tempAxios = new Axios(axiosInstance, link, apiKey, key);
       try {
