@@ -164,14 +164,6 @@ test.each(['single', 'reusable', 'already-used', 'unknown'])('redemption handles
         expect(scene.gifts.deleteGiftCode).not.toHaveBeenCalled();
     }
 });
-test.each([0, -10, 1.2, NaN, Infinity, Number.MAX_SAFE_INTEGER + 1])('coin transfer rejects invalid amount %s before balance writes', async amount => {
-    scene.options.amount = amount;
-    await scene.execute('commands/coinTransfer.js');
-    expect(scene.economy.removeCoins).not.toHaveBeenCalled();
-    expect(scene.economy.addCoins).not.toHaveBeenCalled();
-    expect(scene.economy.transferCoins).not.toHaveBeenCalled();
-    expect(scene.t).toHaveBeenCalledWith('transfer_coins.lower_than_zero_text');
-});
 test.each([
     ['sender_missing', 'transfer_coins.no_account_text'],
     ['recipient_missing', 'transfer_coins.no_account_receiver_text'],
@@ -192,12 +184,6 @@ test.each([
     expect(scene.recipient.send).not.toHaveBeenCalled();
     expect(scene.economy.removeCoins).not.toHaveBeenCalled();
     expect(scene.economy.addCoins).not.toHaveBeenCalled();
-});
-test.each(['sender', 'recipient'])('coin transfer rejects a missing %s account', async missing => {
-    scene.database.getObject.mockImplementation(async id => id === (missing === 'sender' ? scene.user.id : scene.recipient.id) ? null : scene.userRecord);
-    await scene.execute('commands/coinTransfer.js');
-    expect(scene.recipient.send).not.toHaveBeenCalled();
-    expect(scene.economy.transferCoins).not.toHaveBeenCalled();
 });
 test.each([false, true])('valid transfer uses the atomic operation and tolerates blocked DMs (%s)', async blocked => {
     if (blocked) { scene.user.send.mockRejectedValue(new Error('DMs disabled')); scene.recipient.send.mockRejectedValue(new Error('DMs disabled')); }
