@@ -3,7 +3,7 @@
  * All rights reserved.
  */
 
-const { onAsync } = require("../../classes/collectorEvents");
+const { onAsync } = require("../../classes/collectorEvents")
 const { PanelManager } = require("../../classes/panelManager")
 const { TranslationManager } = require("./../../classes/translationManager")
 const { BoosterManager } = require("./../../classes/boosterManager")
