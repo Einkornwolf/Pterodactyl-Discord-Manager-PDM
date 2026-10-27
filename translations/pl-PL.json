@@ -319,5 +319,7 @@
 	"counting.mode_descriptions.binary": "Liczy się w systemie binarnym: 1, 10, 11, 100 …",
 	"counting.mode_descriptions.hexadecimal": "Liczy się w systemie heksadecymalnym: 1, 2, …, A, B, C …",
 	"shop_select.no_shop_items": "Sklep jest pusty",
-	"shop_select.invalid_selection": "Nieprawidłowy wybór sklepu"
+	"shop_select.invalid_selection": "Nieprawidłowy wybór sklepu",
+	"transfer_coins.same_user_text": "Nie możesz przekazywać monet samemu sobie.",
+	"transfer_coins.invalid_balance_text": "Saldo jednego z kont jest nieprawidłowe."
 }
