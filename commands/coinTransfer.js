@@ -25,8 +25,7 @@ module.exports = {
     )
     .addStringOption((option) =>
       option.setName("message").setDescription("Message").setRequired(false)
-    )
-  ,
+    ),
   /**
    * Transfer whole coins atomically before notifying either user.
    * @param {BaseInteraction} interaction 
@@ -50,8 +49,9 @@ module.exports = {
     const recipient = interaction.options.getUser("user")
     const transferAmount = interaction.options.getInteger("amount")
     const transferMessage = interaction.options.getString("message")
-    // Validate accounts, amount and balances in the same operation as both writes.
-    const transfer = await economyManager.transferCoins(userId, recipient.id, transferAmount);
+
+    //Validate Accounts, Amount and Balances
+    const transfer = await economyManager.transferCoins(userId, recipient.id, transferAmount)
     if (!transfer.ok) {
       const reasonKey = {
         sender_missing: "transfer_coins.no_account_text",
@@ -60,7 +60,7 @@ module.exports = {
         invalid_amount: "transfer_coins.lower_than_zero_text",
         invalid_balance: "transfer_coins.invalid_balance_text",
         insufficient_funds: "transfer_coins.not_enough_coins_text"
-      }[transfer.reason];
+      }[transfer.reason]
       await interaction.editReply({
         embeds: [
           new EmbedBuilder()
