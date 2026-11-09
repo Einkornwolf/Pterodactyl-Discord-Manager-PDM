@@ -39,6 +39,14 @@ This bot uses the Trivia API <https://the-trivia-api.com/> to acquire trivia que
 
 ## Installation
 
+Use **Node.js 24 LTS (24.17.0 or newer)** in production (`nvm use`).
+Node.js 26 is also covered by CI. Other major versions are not supported.
+After changing Node.js versions, run `npm ci --ignore-scripts` to install the
+locked dependencies. `better-sqlite3` 13 ships native binaries; this option avoids
+an unnecessary native rebuild with npm 11. The CI verifies both SQLite and canvas
+bindings on Node.js 24 and 26.
+
+
 1. **Create a configuration file** named `config.env`.
 
 2. **Copy the following template** into the file and fill it out according to your setup:
@@ -62,7 +70,10 @@ DELETION_OFFSET=2
 PRICE_OFFSET=0.75
 
 # Discord user IDs allowed to manage coins and the shop (comma-separated list).
-ADMIN_LIST=[]
+ADMIN_LIST="123456789012345678,234567890123456789"
+# Missing/empty/malformed lists deny administrative access. JSON arrays of strings also work.
+# Dangerous developer-only JavaScript evaluation is disabled unless explicitly enabled.
+ENABLE_DEVELOPER_EVAL=false
 
 #Set the Text which should appear in (most) embed footers 
 FOOTER_TEXT = "© Einkornwolf 2025"
@@ -73,7 +84,7 @@ DEFAULT_LANGUAGE="en-US"
 
 3. **Install dependencies:**
    ```bash
-   npm install
+   npm ci --ignore-scripts
    ```
 
 4. **Start the bot:**
@@ -94,6 +105,13 @@ DEFAULT_LANGUAGE="en-US"
 ---
 
 ## Notes
+
+- Translations and emojis are cached. Use `pdm reload ? all` after editing their JSON files.
+- Coin transfers use a SQLite transaction; database operations are serialized across managers
+  in this bot process. Run one bot process per database file.
+- Before upgrading an existing installation, stop the bot and back up `database/json.sqlite`.
+- `npm test` covers authorization, concurrent panel operations, atomic transfers, caching,
+  interaction errors and event loading. Live Discord/Pterodactyl behavior still requires a staging test.
 
 - This bot is provided **as-is**, without any warranty or guarantee.  
 - **Discord.js updates** may break functionality at any time.  
