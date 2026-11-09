@@ -4,7 +4,7 @@
 	"errors.cancel_label": "Anulowano!",
 	"override_runtime.override_text": "Czas działania serwera został ustawiony!",
 	"override_runtime.override_label": "Sukces!",
-	"override_runtimehas_runtime_text": "Serwer ma już przypisany czas działania. Czy chcesz go nadpisać?",
+	"override_runtime.has_runtime_text": "Serwer ma już przypisany czas działania. Czy chcesz go nadpisać?",
 	"override_runtime.has_runtime_label": "Ostrzeżenie!",
 	"override_runtime.error": "Serwer należy do użytkownika panelu, który nie ma konta bota. Nie można ustawić czasu działania.",
 	"giftcode_manager.code_not_found": "Kod do usunięcia nie został znaleziony. Czy został już usunięty?",
