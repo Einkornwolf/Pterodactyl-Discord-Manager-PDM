@@ -35,8 +35,15 @@ client.modals = new Collection()
 client.analogCommands = new Collection()
 client.cronJobs = new Collection()
 
-//Load Events // Client Event Handler
-client.loadEvents()
-//Login Bot
-client.login(token);
+//Load Events and Login Bot
+async function start() {
+	await client.loadEvents()
+	await client.login(token)
+}
 
+//Handle Startup Errors
+start().catch(async error => {
+	console.error('Bot startup failed:', error)
+	await client.destroy()
+	process.exitCode = 1
+})

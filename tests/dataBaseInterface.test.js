@@ -11,7 +11,8 @@ function tempDbFile(name) {
     return path.join(dir, `${name}.sqlite`);
 }
 
-afterAll(() => {
+afterAll(async () => {
+    await DataBaseInterface.closeAll();
     for (const dir of TEMP_DIRS) {
         try { fs.rmSync(dir, { recursive: true, force: true }); } catch { }
     }
