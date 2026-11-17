@@ -5,9 +5,9 @@
     "axios": "^1.21.0",
     "better-sqlite3": "^13.0.3",
     "cron": "^4.4.0",
-    "discord.js": "^14.27.0",
+    "discord.js": "^14.28.1",
     "dotenv": "^18.0.9",
-    "glob": "^14.0.3",
+    "glob": "^14.0.4",
     "quick.db": "^9.1.7"
   },
   "devDependencies": {
